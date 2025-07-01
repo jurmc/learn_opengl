@@ -1,0 +1,2 @@
+WAYLAND_DISPLAY=wayland-1 LIBGL_ALWAYS_SOFTWARE=1 ./main
+Hello OpenGL!
