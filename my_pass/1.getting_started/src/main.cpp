@@ -39,7 +39,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 int main(void) {
     std::cout << "Hello OpenGL!" << std::endl;
-
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -59,6 +58,10 @@ int main(void) {
     }
 
     glViewport(0, 0, 800, 600);
+
+    int nAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
+    std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
     float vertices1[] = {
         0.5f,  0.5f, 0.0f,
