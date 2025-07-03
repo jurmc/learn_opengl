@@ -1,0 +1,17 @@
+GCC = x86_64-w64-mingw32-g++
+LD = x86_64-w64-mingw32-ld
+VPATH = src
+
+all: main
+
+main: main.o glad.o
+	$(GCC) -o main.exe glad.o main.o ../../../glfw/build/src/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
+
+main.o: main.cpp
+	$(GCC) -I ../../../glfw/glfw-3.4/include -I./include -c -o $@ $<
+
+glad.o: glad.c
+	$(GCC) -I ../../../glfw/glfw-3.4/include -I./include -c -o $@ $<
+
+clean:
+	rm -rf glad.o main.o main.exe
