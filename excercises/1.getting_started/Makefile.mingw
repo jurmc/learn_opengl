@@ -4,7 +4,7 @@ CFLAGS = -I ../../deps/usr/local/include
 VPATH = src
 BIN = .exe
 
-all: triangle1$(BIN) triangle2-shaders$(BIN)
+all: triangle1$(BIN) triangle2-shaders$(BIN) triangle2-shaders-uniforms$(BIN)
 
 triangle1$(BIN): triangle1.o glad.o
 	$(GCC) -o $@ $^ ../../deps/usr/local/lib/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
@@ -12,10 +12,16 @@ triangle1$(BIN): triangle1.o glad.o
 triangle2-shaders$(BIN): triangle2-shaders.o glad.o
 	$(GCC) -o $@ $^ ../../deps/usr/local/lib/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
 
+triangle2-shaders-uniforms$(BIN): triangle2-shaders-uniforms.o glad.o
+	$(GCC) -o $@ $^ ../../deps/usr/local/lib/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
+
 triangle1.o: triangle1.cpp
 	$(GCC) $(CFLAGS) -c -o $@ $<
 
 triangle2-shaders.o: triangle2-shaders.cpp
+	$(GCC) $(CFLAGS) -c -o $@ $<
+
+triangle2-shaders-uniforms.o: triangle2-shaders-uniforms.cpp
 	$(GCC) $(CFLAGS) -c -o $@ $<
 
 glad.o: glad.c
