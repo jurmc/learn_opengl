@@ -1,0 +1,25 @@
+GCC = x86_64-w64-mingw32-g++
+LD = x86_64-w64-mingw32-ld
+CFLAGS = -I ../../deps/usr/local/include
+VPATH = src
+BIN = .exe
+
+all: triangle1$(BIN) triangle2-shaders$(BIN)
+
+triangle1$(BIN): triangle1.o glad.o
+	$(GCC) -o $@ $^ ../../deps/usr/local/lib/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
+
+triangle2-shaders$(BIN): triangle2-shaders.o glad.o
+	$(GCC) -o $@ $^ ../../deps/usr/local/lib/libglfw3.a -lgdi32 -lopengl32 -luser32 -lkernel32 -lwinmm -static-libgcc -static-libstdc++ -static
+
+triangle1.o: triangle1.cpp
+	$(GCC) $(CFLAGS) -c -o $@ $<
+
+triangle2-shaders.o: triangle2-shaders.cpp
+	$(GCC) $(CFLAGS) -c -o $@ $<
+
+glad.o: glad.c
+	$(GCC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -rf glad.o triangle1.o triangle2-shaders.o triangle1.exe triangle2-shaders.exe
