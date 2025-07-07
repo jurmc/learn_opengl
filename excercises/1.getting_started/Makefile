@@ -21,4 +21,5 @@ glad.o: glad.c
 
 clean:
 	rm -rf glad.o $(objects)
+	rm -rf $(executables)
 
