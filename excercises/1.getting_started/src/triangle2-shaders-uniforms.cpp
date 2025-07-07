@@ -1,26 +1,11 @@
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
+#include</home/jurmc/learn_opengl/excercises/1.getting_started/src/shader.h>
+
 #include <math.h>
 
 #include<iostream>
-
-const char *vsSource = "                                  \n"
-    "#version 330 core                                    \n"
-    "layout (location = 0) in vec3 aPos;                  \n"
-    "void main()                                          \n"
-    "{                                                    \n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"
-    "}                                                    \n";
-
-const char *fsSource1 = "\n"
-    "#version 330 core                             \n"
-    "out vec4 FragColor;                           \n"
-    "uniform vec4 vertexColorUni;                  \n"
-    "                                              \n"
-    "void main() {                                 \n"
-    "    FragColor = vertexColorUni;               \n"
-    "}                                             \n";
 
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -75,44 +60,10 @@ int main(void) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vsSource, NULL);
-    glCompileShader(vs);
-
-    int rc;
-    char infoLog[512];
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &rc);
-    if (!rc) {
-        glGetShaderInfoLog(vs, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    unsigned int fs1 = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs1, 1, &fsSource1, NULL);
-    glCompileShader(fs1);
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &rc);
-    if (!rc) {
-        glGetShaderInfoLog(fs1, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vs);
-    glAttachShader(shaderProgram, fs1);
-    glLinkProgram(shaderProgram);
-    glGetProgramiv(vs, GL_LINK_STATUS, &rc);
-    if (!rc) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    glDeleteShader(vs);
-    glDeleteShader(fs1);
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // TODO: Shader class doesn't read files from passed in argds
+    Shader shader("/home/jurmc/learn_opengl/excercises/1.getting_started/shaders/vertex_shader.vs", "/home/jurmc/learn_opengl/excercises/1.getting_started/shaders/fragment_shader.fs");
 
     while (!glfwWindowShouldClose(window)) {
         // input
@@ -122,13 +73,12 @@ int main(void) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        shader.use();
 
         // varying green
         float timeValue = glfwGetTime();
         float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "vertexColorUni");
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+        shader.setFloat("vertexColor", greenValue);
 
         // draw triangle
         glBindVertexArray(VAO);

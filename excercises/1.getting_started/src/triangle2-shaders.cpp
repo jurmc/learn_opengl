@@ -102,7 +102,7 @@ int main(void) {
     glAttachShader(shaderProgram1, vs);
     glAttachShader(shaderProgram1, fs1);
     glLinkProgram(shaderProgram1);
-    glGetProgramiv(vs, GL_LINK_STATUS, &rc);
+    glGetProgramiv(shaderProgram1, GL_LINK_STATUS, &rc);
     if (!rc) {
         glGetProgramInfoLog(shaderProgram1, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED" << std::endl;
