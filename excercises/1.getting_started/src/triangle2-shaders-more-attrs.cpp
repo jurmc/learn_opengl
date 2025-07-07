@@ -9,20 +9,20 @@ const char *vsSource = "                                  \n"
     "#version 330 core                                    \n"
     "layout (location = 0) in vec3 aPos;                  \n"
     "layout (location = 1) in vec3 aColor;                \n"
-    "out float col;                                       \n"
+    "out vec3 col;                                       \n"
     "void main()                                          \n"
     "{                                                    \n"
     "    gl_Position = vec4(aPos, 1.0);                   \n"
-    "    col = aColor.r;                                       \n"
+    "    col = aColor;                                       \n"
     "}                                                    \n";
 
 const char *fsSource1 = "\n"
     "#version 330 core                             \n"
     "out vec4 FragColor;                           \n"
-    "in float col;                                       \n"
+    "in vec3 col;                                       \n"
     "                                              \n"
     "void main() {                                 \n"
-    "    FragColor = vec4(col, 0.0, 0.5, 1.0);       \n"
+    "    FragColor = vec4(col, 1.0);       \n"
     "}                                             \n";
 
 void processInput(GLFWwindow *window) {
