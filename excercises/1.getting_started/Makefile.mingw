@@ -28,4 +28,4 @@ glad.o: glad.c
 	$(GCC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf glad.o triangle1.o triangle2-shaders.o triangle1.exe triangle2-shaders.exe
+	rm -rf glad.o triangle1.o triangle2-shaders.o triangle1$(BIN) triangle2-shaders$(BIN)

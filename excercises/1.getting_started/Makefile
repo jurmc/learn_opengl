@@ -1,15 +1,24 @@
+G++ = g++
+LD = ld
+CFLAGS = -I ../../deps/usr/local/include
 VPATH = src
+BIN =
 
-all: main
+sources = triangle1.cpp triangle2-shaders.cpp triangle2-shaders-more-attrs.cpp triangle2-shaders-uniforms.cpp
+objects = $(sources:.cpp=.o)
+executables = $(objects:.o=$(BIN))
 
-main: main.o glad.o
-	g++ -lglfw glad.o main.o -o main
+all: $(executables)
 
-main.o: main.cpp
-	g++ -I./include -c -o $@ $<
+$(objects): %.o: %.cpp
+	$(G++) $(CFLAGS) -c -o $@ $<
+
+$(executables): %$(BIN): %.o glad.o
+	$(G++) -lglfw -o $@ $^
 
 glad.o: glad.c
-	g++ -I./include -c -o $@ $<
+	$(G++) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -rf glad.o main.o main
+	rm -rf glad.o $(objects)
+
