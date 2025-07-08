@@ -43,10 +43,10 @@ int main(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    float vertices1[] = {
-        0.0f,  0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f};
+    float vertices[] = {
+        0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f};
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
@@ -55,14 +55,18 @@ int main(void) {
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    Shader shader("shaders/triangle3.vs", "shaders/triangle3.fs");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    Shader shader("shaders/vertex_shader.vs", "shaders/fragment_shader.fs");
 
     while (!glfwWindowShouldClose(window)) {
         // input
@@ -73,11 +77,7 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-
-        // varying green
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        shader.setFloat("vertexColor", greenValue);
+        shader.setFloat("xOffset", 0.5f);
 
         // draw triangle
         glBindVertexArray(VAO);
