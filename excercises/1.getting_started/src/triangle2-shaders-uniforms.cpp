@@ -62,7 +62,7 @@ int main(void) {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    // TODO: Shader class doesn't read files from passed in argds
+    // TODO: Shader class doesn't read files from passed in args
     Shader shader("/home/jurmc/learn_opengl/excercises/1.getting_started/shaders/vertex_shader.vs", "/home/jurmc/learn_opengl/excercises/1.getting_started/shaders/fragment_shader.fs");
 
     while (!glfwWindowShouldClose(window)) {
