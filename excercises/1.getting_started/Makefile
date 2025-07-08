@@ -1,6 +1,6 @@
 G++ = g++
 LD = ld
-CFLAGS = -I ../../deps/usr/local/include
+CFLAGS = -I ../../deps/usr/local/include -I ../../utils/include
 VPATH = src
 BIN =
 
@@ -13,13 +13,10 @@ all: $(executables)
 $(objects): %.o: %.cpp
 	$(G++) $(CFLAGS) -c -o $@ $<
 
-$(executables): %$(BIN): %.o glad.o
-	$(G++) -lglfw -o $@ $^
-
-glad.o: glad.c
-	$(G++) $(CFLAGS) -c -o $@ $<
+$(executables): %$(BIN): %.o
+	$(G++) -L ../../deps/usr/local/lib -o $@ $^ -lglfw -l:glad.a
 
 clean:
-	rm -rf glad.o $(objects)
+	rm -rf $(objects)
 	rm -rf $(executables)
 

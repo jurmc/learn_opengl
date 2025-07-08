@@ -1,7 +1,7 @@
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
-#include</home/jurmc/learn_opengl/excercises/1.getting_started/src/shader.h>
+#include<shader.h>
 
 #include <math.h>
 
