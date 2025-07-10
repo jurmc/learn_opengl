@@ -10,7 +10,10 @@ sources = \
    triangle2-shaders-more-attrs.cpp \
    triangle2-shaders-uniforms.cpp \
    triangle3.cpp \
-   textures1.cpp
+   textures1.cpp \
+   textures1-ex1.cpp \
+   textures1-ex3.cpp \
+   textures1-ex4.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
