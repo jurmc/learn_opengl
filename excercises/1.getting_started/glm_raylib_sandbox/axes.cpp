@@ -1,25 +1,12 @@
-/*******************************************************************************************
-*
-*   raylib [core] example - Initialize 3d camera mode
-*
-*   Example complexity rating: [★☆☆☆] 1/4
-*
-*   Example originally created with raylib 1.0, last time updated with raylib 1.0
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
-
 #include "raylib.h"
-
+#include "rlgl.h"
 
 void DrawArrow3D(Vector3 v1, Vector3 v2, Color col) {
     DrawLine3D(v1, v2, col);
-    DrawCube(v1, 0.2, 0.2, 0.2, col);
-    DrawSphere(v2, 0.2, col);
+    //DrawCube(v1, 0.2, 0.2, 0.2, col);
+    //DrawSphere(v2, 0.2, col);
+
+    DrawCylinder(v2, 0.0f, 0.2f, 0.5f, 10, col);
 }
 
 //------------------------------------------------------------------------------------
@@ -67,12 +54,14 @@ int main(void)
 
         // Draw
         //----------------------------------------------------------------------------------
+        //
+        //
+
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
 
             BeginMode3D(camera);
-
                 DrawArrow3D(Vector3{0.0f, 0.0f, 0.0f}, Vector3{7.0f, 0.0f, 0.0f}, BLUE);
                 DrawArrow3D(Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 7.0f, 0.0f}, RED);
                 DrawArrow3D(Vector3{0.0f, 0.0f, 0.0f}, Vector3{0.0f, 0.0f, 7.0f}, GREEN);

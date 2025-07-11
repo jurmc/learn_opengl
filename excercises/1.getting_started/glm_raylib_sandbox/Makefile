@@ -4,7 +4,10 @@ CFLAGS = -I glm_prefix/include/
 LDFLAGS = -lraylib
 
 sources = start.cpp \
-	  axes.cpp
+	  axes.cpp \
+	  dot_product.cpp \
+	  cross_product.cpp \
+	  mat_operations.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
