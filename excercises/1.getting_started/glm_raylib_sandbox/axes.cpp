@@ -148,6 +148,10 @@ void DrawObject(Object3d *o) {
     DrawSphere(o->pos, 0.3f, RED);           
     Matrix trans_m = MatrixTranslate(o->pos.x, o->pos.y, o->pos.z);
 
+    Matrix combined_m =  MatrixMultiply(pitch_rot, yaw_rot);
+    combined_m = MatrixMultiply(combined_m, roll_rot);
+    combined_m = MatrixMultiply(combined_m, trans_m);
+
     for (size_t i = 0; i < o->vertex_n; ++i) {
 
         size_t i2;
@@ -162,17 +166,8 @@ void DrawObject(Object3d *o) {
         Vector3 trans_v1 = v1;
         Vector3 trans_v2 = v2;
 
-        trans_v1 = Vector3Transform(trans_v1, pitch_rot);
-        trans_v2 = Vector3Transform(trans_v2, pitch_rot);   
-
-        trans_v1 = Vector3Transform(trans_v1, yaw_rot);
-        trans_v2 = Vector3Transform(trans_v2, yaw_rot);   
-
-        trans_v1 = Vector3Transform(trans_v1, roll_rot);
-        trans_v2 = Vector3Transform(trans_v2, roll_rot);   
-
-        trans_v1 = Vector3Transform(trans_v1, trans_m);
-        trans_v2 = Vector3Transform(trans_v2, trans_m);   
+        trans_v1 = Vector3Transform(trans_v1, combined_m);
+        trans_v2 = Vector3Transform(trans_v2, combined_m);   
 
         DrawLine3D(v1, v2, RED);
         DrawLine3D(trans_v1, trans_v2, GREEN);

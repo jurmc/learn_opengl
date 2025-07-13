@@ -1,6 +1,6 @@
 G++ = g++
 LD = ld
-CFLAGS = -I ../../deps/usr/local/include -I ../../utils/include
+CFLAGS = -I ../../deps/usr/local/include -I ../../utils/include -I glm_raylib_sandbox/glm_prefix/include/
 VPATH = src
 BIN =
 
@@ -13,7 +13,9 @@ sources = \
    textures1.cpp \
    textures1-ex1.cpp \
    textures1-ex3.cpp \
-   textures1-ex4.cpp
+   textures1-ex4.cpp \
+   textures2.cpp \
+   textures2-ex2.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
