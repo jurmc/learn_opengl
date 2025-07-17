@@ -15,7 +15,9 @@ sources = \
    textures1-ex3.cpp \
    textures1-ex4.cpp \
    textures2.cpp \
-   textures2-ex2.cpp
+   textures2-ex2.cpp \
+   textures3-going3d.cpp \
+   textures3-more3d.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
