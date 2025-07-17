@@ -81,7 +81,7 @@ int main(void) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    Shader shader("shaders/texture3-going3d.vs", "shaders/texture1.fs");
+    Shader shader("shaders/texture3-more3d.vs", "shaders/texture3-more3d.fs");
 
     int width, height, nChannels;
     // Image and textture
