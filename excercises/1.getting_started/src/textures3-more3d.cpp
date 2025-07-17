@@ -47,6 +47,7 @@ int main(void) {
     }
 
     glViewport(0, 0, 800, 600);
+    glEnable(GL_DEPTH_TEST);
 
     float vertices[] = {
          //  coords         // texture coords
@@ -148,11 +149,6 @@ int main(void) {
     shader.setInt("texture1", 0);
     shader.setInt("texture2", 1);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    int modelLoc = glGetUniformLocation(shader.ID, "model");
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     int viewLoc = glGetUniformLocation(shader.ID, "view");
@@ -163,13 +159,16 @@ int main(void) {
     int projectionLoc = glGetUniformLocation(shader.ID, "projection");
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
+    glm::mat4 model = glm::mat4(1.0f);
+
+
     while (!glfwWindowShouldClose(window)) {
         // input
         processInput(window);
 
         // render commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
@@ -177,6 +176,11 @@ int main(void) {
         glBindTexture(GL_TEXTURE_2D, texture2);
 
         shader.use();
+
+        model = glm::rotate(model, glm::radians((float)glfwGetTime()), glm::vec3(0.5f, 1.0f, 0.0f));
+        int modelLoc = glGetUniformLocation(shader.ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / 5);
 
