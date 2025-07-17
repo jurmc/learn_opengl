@@ -48,24 +48,49 @@ int main(void) {
 
     glViewport(0, 0, 800, 600);
 
-//    float vertices[] = {
-//         //  coords         // texture coords
-//         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-//         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-//        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-//        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-//    };
-
     float vertices[] = {
          //  coords         // texture coords
-         -0.5f, -0.5f, -0.5,  0.0f,  0.0f,
-          0.5f, -0.5f, -0.5,  1.0f,  0.0f,
-          0.5f,  0.5f, -0.5f, 1.0f,  1.0f
-    };
+         -0.5f, -0.5f, -0.5,  0.0f, 0.0f,
+          0.5f, -0.5f, -0.5,  1.0f, 0.0f,
+          0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+          0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+         -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-    unsigned int indices[] = {
-        0, 1, 2//,
-        //0, 2, 3
+         -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+          0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+          0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+          0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+         -0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+         -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+
+         -0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+         -0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+         -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+         -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+         -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+         -0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+
+          0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+          0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+          0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+          0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+          0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+          0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+
+         -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+          0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+          0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+          0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+         -0.5f, -0.5f,  0.5f, 0.0f, 0.0f,
+         -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+         -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
+          0.5f,  0.5f, -0.5f, 1.0f, 1.0f,
+          0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+          0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+         -0.5f,  0.5f,  0.5f, 0.0f, 0.0f,
+         -0.5f,  0.5f, -0.5f, 0.0f, 1.0f,
     };
 
     unsigned int VAO;
@@ -80,11 +105,6 @@ int main(void) {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     Shader shader("shaders/texture3-more3d.vs", "shaders/texture3-more3d.fs");
 
@@ -158,8 +178,7 @@ int main(void) {
 
         shader.use();
         glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 1);
-        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / 5);
 
         // hanlde events, and swap buffers
         glfwSwapBuffers(window);
