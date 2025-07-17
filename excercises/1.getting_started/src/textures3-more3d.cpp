@@ -48,17 +48,24 @@ int main(void) {
 
     glViewport(0, 0, 800, 600);
 
+//    float vertices[] = {
+//         //  coords         // texture coords
+//         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+//         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+//        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+//        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+//    };
+
     float vertices[] = {
          //  coords         // texture coords
-         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-         0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+         -0.5f, -0.5f, -0.5,  0.0f,  0.0f,
+          0.5f, -0.5f, -0.5,  1.0f,  0.0f,
+          0.5f,  0.5f, -0.5f, 1.0f,  1.0f
     };
 
     unsigned int indices[] = {
-        0, 1, 2,
-        0, 2, 3
+        0, 1, 2//,
+        //0, 2, 3
     };
 
     unsigned int VAO;
@@ -151,6 +158,7 @@ int main(void) {
 
         shader.use();
         glBindVertexArray(VAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 1);
         glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
         // hanlde events, and swap buffers
