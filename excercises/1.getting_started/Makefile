@@ -19,7 +19,8 @@ sources = \
    textures3-going3d.cpp \
    textures3-more3d.cpp \
    textures3-ten-cubes.cpp \
-   minecraft-cubes.cpp 
+   minecraft-cubes.cpp \
+   camera1.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
