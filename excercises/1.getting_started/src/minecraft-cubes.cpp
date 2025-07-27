@@ -160,12 +160,12 @@ int main(void) {
     shader.use();
     shader.setInt("texture1", 0);
 
-    std::list<glm::vec3> cubePositions2 = {
-       glm::vec3(  0.0f,   0.0f,   0.0f),
-       glm::vec3(  2.0f,   0.0f,   0.0f),
-       glm::vec3(  4.0f,   0.0f,   0.0f),
-       glm::vec3(  6.0f,   0.0f,   0.0f)
-    };
+    std::list<glm::vec3> cubePositions;
+    for (float x = 0; x < 10; ++x) {
+        for (float z = 0; z > -10; --z) {
+            cubePositions.push_back(glm::vec3(2*x, abs(z)/2.0f, 2*z));
+        }
+    }
 
     float fov_angle = 45.0f;
     float aspect_ratio = 800.0f / 600.0f;
@@ -183,7 +183,6 @@ int main(void) {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
 
         shader.use();
 
@@ -194,7 +193,7 @@ int main(void) {
 
         glm::mat4 projection = glm::mat4(1.0f);
 
-        for (glm::vec3 cube : cubePositions2)
+        for (glm::vec3 cube : cubePositions)
         {
             projection = glm::perspective(glm::radians(fov_angle), aspect_ratio, 0.1f, 100.0f);
             int projectionLoc = glGetUniformLocation(shader.ID, "projection");
