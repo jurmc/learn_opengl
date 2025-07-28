@@ -13,8 +13,7 @@
 #include <iostream>
 #include <list>
 
-void processInput(GLFWwindow *window, float *fov_angle,
-        float *cam_x, float *cam_z) {
+void processInput(GLFWwindow *window, float *fov_angle, float *cam_x, float *cam_z) {
     float fov_angle_incr = 0.05;
     float aspect_ratio_incr = 0.05;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -148,8 +147,8 @@ int main(void) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     stbi_set_flip_vertically_on_load(true);
-    //unsigned char *data = stbi_load("/home/jurmc/game_assets/SBS - Sandbox Style Terrain - Texture Pack/Textures/Dirt/cubeDirt_1.png", &width, &height, &nChannels, 0);
-    unsigned char *data = stbi_load("/home/jurmc/game_assets/SBS - Sandbox Style Terrain - Texture Pack/Textures/Grass/cubeGreen_1.png", &width, &height, &nChannels, 0);
+    unsigned char *data = stbi_load("/home/jurmc/game_assets/SBS - Sandbox Style Terrain - Texture Pack/Textures/Dirt/cubeDirt_1.png", &width, &height, &nChannels, 0);
+    //unsigned char *data = stbi_load("/home/jurmc/game_assets/SBS - Sandbox Style Terrain - Texture Pack/Textures/Grass/cubeGreen_1.png", &width, &height, &nChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -175,8 +174,7 @@ int main(void) {
 
     while (!glfwWindowShouldClose(window)) {
         // input
-        processInput(window, &fov_angle,
-                &cam_x, &cam_z);
+        processInput(window, &fov_angle, &cam_x, &cam_z);
 
         // render commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

@@ -13,13 +13,15 @@
 #include <iostream>
 
 void processInput(GLFWwindow *window, float *fov_angle, float *aspect_ratio,
-        float *cam_x, float *cam_z) {
+        glm::vec3 *cameraPos, glm::vec3 *cameraTarget, glm::vec3 *cameraUp,
+        float deltatime) {
     float fov_angle_incr = 0.05;
     float aspect_ratio_incr = 0.05;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 
+    float cameraSpeed = 0.1f * deltatime;
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         *fov_angle = *fov_angle + fov_angle_incr;
     } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
@@ -33,15 +35,17 @@ void processInput(GLFWwindow *window, float *fov_angle, float *aspect_ratio,
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        *cam_x = *cam_x + 0.1;
+        *cameraPos -= cameraSpeed * glm::normalize(glm::cross(*cameraTarget, *cameraUp));
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        *cam_x = *cam_x - 0.1;
+        *cameraPos += cameraSpeed * glm::normalize(glm::cross(*cameraTarget, *cameraUp));
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        *cam_z = *cam_z + 0.1;
+        *cameraPos += cameraSpeed * *cameraTarget;
+        std::cout << "W" << std::endl;
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        *cam_z = *cam_z - 0.1;
+        *cameraPos -= cameraSpeed * *cameraTarget;
+        std::cout << "S" << std::endl;
     }
 }
 
@@ -192,13 +196,28 @@ int main(void) {
 
     float fov_angle = 45.0f;
     float aspect_ratio = 800.0f / 600.0f;
-    float cam_x  = 0.0f;
-    float cam_z = -3.0f;
+
+    // camera
+    float cam_x = 0.0f;
+    float cam_z = 10.0f;
+    glm::vec3 cameraPos = glm::vec3(cam_x, 0.0f, cam_z);
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    float deltaTime;
+    float lastFrame;
 
     while (!glfwWindowShouldClose(window)) {
+        float currentFrame = glfwGetTime();
+        float deltaTime = lastFrame - glfwGetTime();
+        float lastFrame = currentFrame;
+
         // input
-        processInput(window, &fov_angle, &aspect_ratio,
-                &cam_x, &cam_z);
+        processInput(window, &fov_angle, &aspect_ratio, &cameraPos, &cameraTarget, &cameraUp, deltaTime);
+
+        glm::mat4 newView = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+        int viewLoc = glGetUniformLocation(shader.ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(newView));
 
         // render commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -213,17 +232,6 @@ int main(void) {
 
         for (unsigned int i = 1; i < 10; ++i)
         {
-            // camera
-            const float r = 10.0f;
-            float cam_x = sin(glfwGetTime()) * r;
-            float cam_z = cos(glfwGetTime()) * r;
-            glm::vec3 cameraPos = glm::vec3(cam_x, 0.0f, cam_z);
-            glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-            glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-            //glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-            glm::mat4 newView = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-            int viewLoc = glGetUniformLocation(shader.ID, "view");
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(newView));
 
             projection = glm::perspective(glm::radians(fov_angle), aspect_ratio, 0.1f, 100.0f);
             int projectionLoc = glGetUniformLocation(shader.ID, "projection");
@@ -233,7 +241,7 @@ int main(void) {
             model = glm::translate(model, cubePositions[i]);
 
             if ( i % 3 == 0) {
-                model = glm::rotate(model, glm::radians(20.0f + (float)glfwGetTime() * i), glm::vec3(0.5f, 1.0f, 0.0f));
+                model = glm::rotate(model, glm::radians(20.0f + (float)glfwGetTime() * i * 6), glm::vec3(0.5f, 1.0f, 0.0f));
                 int modelLoc = glGetUniformLocation(shader.ID, "model");
                 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
             } else {
