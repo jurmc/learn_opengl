@@ -12,40 +12,23 @@
 
 #include <iostream>
 
-void processInput(GLFWwindow *window, float *fov_angle, float *aspect_ratio,
-        glm::vec3 *cameraPos, glm::vec3 *cameraTarget, glm::vec3 *cameraUp,
-        float deltatime) {
-    float fov_angle_incr = 0.05;
+void processInput(GLFWwindow *window, glm::vec3 *cameraPos, glm::vec3 *cameraFront, glm::vec3 *cameraUp, float deltatime) {
     float aspect_ratio_incr = 0.05;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 
-    float cameraSpeed = 0.1f * deltatime;
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        *fov_angle = *fov_angle + fov_angle_incr;
-    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        *fov_angle = *fov_angle - fov_angle_incr;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        *aspect_ratio = *aspect_ratio - aspect_ratio_incr;
-    } else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        *aspect_ratio = *aspect_ratio + aspect_ratio_incr;
-    }
-
+    float cameraSpeed = 0.01f;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        *cameraPos -= cameraSpeed * glm::normalize(glm::cross(*cameraTarget, *cameraUp));
+        *cameraPos += cameraSpeed * glm::normalize(glm::cross(*cameraFront, *cameraUp));
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        *cameraPos += cameraSpeed * glm::normalize(glm::cross(*cameraTarget, *cameraUp));
+        *cameraPos -= cameraSpeed * glm::normalize(glm::cross(*cameraFront, *cameraUp));
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        *cameraPos += cameraSpeed * *cameraTarget;
-        std::cout << "W" << std::endl;
+        *cameraPos += cameraSpeed * *cameraFront;
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        *cameraPos -= cameraSpeed * *cameraTarget;
-        std::cout << "S" << std::endl;
+        *cameraPos -= cameraSpeed * *cameraFront;
     }
 }
 
@@ -54,6 +37,51 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+double prev_mouse_xpos, prev_mouse_ypos;
+double pitch = 0.0f;
+double yaw = -90.0f;
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+float fov = 45.0f;
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    static bool initialized = false;
+    double mouse_xmove, mouse_ymove;
+
+    if (!initialized) {
+        initialized = true;
+        mouse_xmove = xpos;
+        mouse_ymove = ypos;
+    }
+
+    mouse_xmove = prev_mouse_xpos - xpos;
+    mouse_ymove = ypos - prev_mouse_ypos;
+    prev_mouse_xpos = xpos;
+    prev_mouse_ypos = ypos;
+
+    float sensitivity = 0.05f;
+    yaw += sensitivity * mouse_xmove;
+    pitch += sensitivity * mouse_ymove;
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+
+    std::cout << "yaw: " << yaw << " pitch: " << pitch << std::endl;
+    std::cout << front.x << ", " << front.y << ", " << front.z << std::endl;
+}
+
+void zoom_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    std::cout << "zoom_callback yoffset: " << yoffset << std::endl;
+
+    fov += yoffset;
+    if (fov < 1.0f) fov = 1.0f;
+    if (fov > 45.0f) fov = 45.0f;
 }
 
 int main(void) {
@@ -71,6 +99,9 @@ int main(void) {
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, zoom_callback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -194,14 +225,12 @@ int main(void) {
         glm::vec3( -1.3f,   1.0f,  -1.5f)
     };
 
-    float fov_angle = 45.0f;
     float aspect_ratio = 800.0f / 600.0f;
 
     // camera
     float cam_x = 0.0f;
     float cam_z = 10.0f;
     glm::vec3 cameraPos = glm::vec3(cam_x, 0.0f, cam_z);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
     float deltaTime;
@@ -213,9 +242,9 @@ int main(void) {
         float lastFrame = currentFrame;
 
         // input
-        processInput(window, &fov_angle, &aspect_ratio, &cameraPos, &cameraTarget, &cameraUp, deltaTime);
+        processInput(window, &cameraPos, &cameraFront, &cameraUp, deltaTime);
 
-        glm::mat4 newView = glm::lookAt(cameraPos, cameraTarget, cameraUp);
+        glm::mat4 newView = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         int viewLoc = glGetUniformLocation(shader.ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(newView));
 
@@ -233,7 +262,7 @@ int main(void) {
         for (unsigned int i = 1; i < 10; ++i)
         {
 
-            projection = glm::perspective(glm::radians(fov_angle), aspect_ratio, 0.1f, 100.0f);
+            projection = glm::perspective(glm::radians(fov), aspect_ratio, 0.1f, 100.0f);
             int projectionLoc = glGetUniformLocation(shader.ID, "projection");
             glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
