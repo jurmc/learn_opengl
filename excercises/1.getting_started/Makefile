@@ -1,6 +1,6 @@
 G++ = g++
 LD = ld
-CFLAGS = -I ../../deps/usr/local/include -I ../../utils/include -I glm_raylib_sandbox/glm_prefix/include/
+CFLAGS = -I ./include -I ../../deps/usr/local/include -I ../../utils/include -I glm_raylib_sandbox/glm_prefix/include/
 VPATH = src
 BIN =
 
@@ -20,7 +20,8 @@ sources = \
    textures3-more3d.cpp \
    textures3-ten-cubes.cpp \
    minecraft-cubes.cpp \
-   camera1.cpp
+   camera1.cpp \
+   camera2-using-camera-class.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
