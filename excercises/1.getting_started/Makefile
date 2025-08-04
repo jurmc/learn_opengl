@@ -21,7 +21,8 @@ sources = \
    textures3-ten-cubes.cpp \
    minecraft-cubes.cpp \
    camera1.cpp \
-   camera2-using-camera-class.cpp
+   camera2-using-camera-class.cpp \
+   camera2-excersise1-fps-camera.cpp
 
 objects = $(sources:.cpp=.o)
 executables = $(objects:.o=$(BIN))
