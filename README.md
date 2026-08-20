@@ -1,5 +1,12 @@
 -- Native
 
+Libs: GLFW, GLM, stb:
+  Use library from Arch repository:
+  ```
+    pacman -Sy glfw glm stb
+  ```
+
+
 Glad
   https://glad.dav1d.de/
   Choose: 
@@ -19,9 +26,6 @@ Glad
     mkdir ../lib
     mv glad.a ../lib
 ```
-
-GLFW, GLM
-  Use library from Arch repository
 
 -- Cross compiling (host Archlinux, target Windows):
 
