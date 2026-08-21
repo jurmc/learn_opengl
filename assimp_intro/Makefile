@@ -3,8 +3,6 @@ CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -I ../deps/usr/local/include
 DEPFLAGS := -MMD -MP
 
 LDFLAGS = -L ../deps/usr/local/lib
-#LDFLAGS = -L ../deps/usr/local/lib -Wl,-e,main_assimp
-#LDFLAGS = -L ../deps/usr/local/lib -Wl,-e,main_browser
 
 LIBS = -l:glad.a -lassimp -lglfw
 

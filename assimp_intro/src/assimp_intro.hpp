@@ -1,12 +1,16 @@
 #include<string>
+#include<vector>
 
-class MyImporter {
+std::vector<float> LoadModel(); // Temporary
+std::vector<float> LoadModel2(); // Temporary
+
+class Loader {
 public:
-    MyImporter(const std::string &filename) : filename(filename) {};
-    ~MyImporter();
+    Loader(const std::string &filename);
 
-    bool Import() {return false;};
+    std::vector<float> getVertices() {return mVertices;};
 
 private:
-    std::string filename;
+    std::string mFilename;
+    std::vector<float> mVertices;
 };

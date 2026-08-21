@@ -1,5 +1,8 @@
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
+#include "main.hpp"
+#include "assimp_intro.hpp"
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include<iostream>
 #include<vector>
@@ -29,27 +32,17 @@ const char *fsSource2 = "\n"
     "    FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f); \n"
     "}                                             \n";
 
-std::vector<float> getVertices() {
-    std::vector<float> v{
-        0.0f,  0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f
-    };
-
-    return v;
-}
-
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback([[maybe_unused]] GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-int main1(void) {
+int main_triangle(void) {
     std::cout << "Hello OpenGL!" << std::endl;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -75,7 +68,13 @@ int main1(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    auto vertices = getVertices();
+    //Loader l("../kenney_car-kit/Models/GLB format/cone.glb");
+    //Loader l("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
+    //Loader l("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    Loader l("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    auto vertices = l.getVertices();
+    std::print("vertices.size(): {}\n", vertices.size());
+    auto verticesNum = vertices.size();
     auto verticesSize = vertices.size() * sizeof(float);
 
     unsigned int VAO1;
@@ -163,7 +162,7 @@ int main1(void) {
         // 1st triangle
         glUseProgram(shaderProgram1);
         glBindVertexArray(VAO1);
-        glDrawArrays(GL_POINTS, 0, 3);
+        glDrawArrays(GL_POINTS, 0, verticesNum);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // hanlde events, and swap buffers
