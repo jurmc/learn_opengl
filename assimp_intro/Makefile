@@ -1,26 +1,37 @@
-# bear -- g++ -std=c++23 -lassimp assimp_intro.cpp -o assimp_intro && ./assimp_intro
-G++ = g++
-LD = ld
-CFLAGS = -std=c++23 -I ../deps/usr/local/include
-VPATH = src
-BIN =
+CXX = g++
+CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -I ../deps/usr/local/include
+DEPFLAGS := -MMD -MP
 
-sources = \
-   assimp_intro.cpp \
-   triangle.cpp
+LDFLAGS = -L ../deps/usr/local/lib
+#LDFLAGS = -L ../deps/usr/local/lib -Wl,-e,main_assimp
+#LDFLAGS = -L ../deps/usr/local/lib -Wl,-e,main_browser
 
-objects = $(sources:.cpp=.o)
-executables = $(objects:.o=$(BIN))
+LIBS = -l:glad.a -lassimp -lglfw
 
-all: $(executables)
+SRC_DIR := src
+OBJ_DIR := build
+BIN_DIR := bin
 
-$(objects): %.o: %.cpp
-	$(G++) $(CFLAGS) -c -o $@ $<
+TARGET := $(BIN_DIR)/model_browser
+SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
+OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+DEPS   := $(OBJS:.o=.d)
 
-$(executables): %$(BIN): %.o
-	$(G++) -L ../deps/usr/local/lib -o $@ $^ -lassimp -lglfw -l:glad.a
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS) | $(BIN_DIR)
+	$(CXX) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $< -o $@
+
+$(OBJ_DIR) $(BIN_DIR):
+	mkdir -p $@
+
+-include $(DEPS)
 
 clean:
-	rm -rf $(objects)
-	rm -rf $(executables)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 

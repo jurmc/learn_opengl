@@ -1,10 +1,12 @@
+#include "assimp_intro.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #include <print>
 
-int main(int argc, char **argv) {
+extern "C" int main([[maybe_unused]] int argc, [[maybe_unused]] char **argv) {
     std::print("Hello Assimp\n");
 
     Assimp::Importer importer;
@@ -18,7 +20,7 @@ int main(int argc, char **argv) {
 
     if (nullptr == scene) {
         std::print("Error while importing file\n");
-        return false;
+        return 1;
     }
 
     std::print("mNumMeshes: {}\n", scene->mNumMeshes);

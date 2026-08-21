@@ -2,6 +2,8 @@
 #include<GLFW/glfw3.h>
 
 #include<iostream>
+#include<vector>
+#include<print>
 
 const char *vsSource = "                                  \n"
     "#version 330 core                                    \n"
@@ -27,6 +29,16 @@ const char *fsSource2 = "\n"
     "    FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f); \n"
     "}                                             \n";
 
+std::vector<float> getVertices() {
+    std::vector<float> v{
+        0.0f,  0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f
+    };
+
+    return v;
+}
+
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -37,7 +49,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-int main(void) {
+int main1(void) {
     std::cout << "Hello OpenGL!" << std::endl;
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -63,20 +75,8 @@ int main(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    float vertices1[] = {
-        0.5f,  0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f};
-
-    float vertices2[] = {
-        0.45f,  0.5f, 0.0f,
-        -0.55f, 0.5f, 0.0f,
-        -0.55f, -0.5f, 0.0f};
-
-    unsigned int indices[] = {
-        0, 1, 2, // first triangle
-        3, 0, 2, // second triangle
-    };
+    auto vertices = getVertices();
+    auto verticesSize = vertices.size() * sizeof(float);
 
     unsigned int VAO1;
     glGenVertexArrays(1, &VAO1);
@@ -85,19 +85,7 @@ int main(void) {
     unsigned int VBO1;
     glGenBuffers(1, &VBO1);
     glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    unsigned int VAO2;
-    glGenVertexArrays(1, &VAO2);
-    glBindVertexArray(VAO2);
-
-    unsigned int VBO2;
-    glGenBuffers(1, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -162,6 +150,7 @@ int main(void) {
     glDeleteShader(fs2);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPointSize(5);
 
     while (!glfwWindowShouldClose(window)) {
         // input
@@ -174,13 +163,7 @@ int main(void) {
         // 1st triangle
         glUseProgram(shaderProgram1);
         glBindVertexArray(VAO1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        // 2nd triangle
-        glUseProgram(shaderProgram2);
-        glBindVertexArray(VAO2);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_POINTS, 0, 3);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // hanlde events, and swap buffers
