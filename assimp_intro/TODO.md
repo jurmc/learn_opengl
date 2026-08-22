@@ -1,2 +1,2 @@
-- start simple integration of DearIMGU (for start text box with model name)
-
+- using imgui present some properites of loaded model
+- model should rotate arount z axis
