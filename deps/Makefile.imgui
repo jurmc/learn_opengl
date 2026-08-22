@@ -6,7 +6,7 @@ LIB_DIR := usr/local/lib
 
 TARGET := $(LIB_DIR)/imgui.a
 VPATH  := usr/local/src
-SRCS   := imgui.cpp imgui_draw.cpp imgui_impl_glfw.cpp imgui_impl_opengl3.cpp imgui_demo.cpp imgui_widgets.cpp imgui_tables.cpp
+SRCS   := imgui.cpp imgui_draw.cpp imgui_impl_glfw.cpp imgui_impl_opengl3.cpp imgui_widgets.cpp imgui_tables.cpp
 OBJS := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS   := $(OBJS:.o=.d)
 

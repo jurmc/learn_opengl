@@ -170,6 +170,7 @@ int main_triangle(void) {
         glfwPollEvents();
     }
 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }

@@ -1,6 +1,5 @@
 CXX = g++
 CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -I ../deps/usr/local/include
-DEPFLAGS := -MMD -MP
 
 LDFLAGS = -L ../deps/usr/local/lib
 
@@ -23,7 +22,7 @@ $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR) $(BIN_DIR):
 	mkdir -p $@
