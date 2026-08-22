@@ -4,7 +4,7 @@ DEPFLAGS := -MMD -MP
 
 LDFLAGS = -L ../deps/usr/local/lib
 
-LIBS = -l:glad.a -lassimp -lglfw
+LIBS = -l:glad.a -l:imgui.a -lassimp -lglfw -lGL
 
 SRC_DIR := src
 OBJ_DIR := build
