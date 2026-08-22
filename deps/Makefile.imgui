@@ -1,0 +1,32 @@
+CXX = g++
+CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -I ../deps/usr/local/include
+
+OBJ_DIR := usr/local/build
+LIB_DIR := usr/local/lib
+
+TARGET := $(LIB_DIR)/imgui.a
+VPATH  := usr/local/src
+SRCS   := imgui.cpp imgui_draw.cpp
+OBJS := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+DEPS   := $(OBJS:.o=.d)
+
+$(info SRCS $(SRCS))
+$(info OBJS $(OBJS))
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS) | $(BIN_DIR)
+	ar rcs $(TARGET) $(OBJS)
+
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c $< -o $@
+
+$(OBJ_DIR) $(LIB_DIR):
+	mkdir -p $@
+
+-include $(DEPS)
+
+clean:
+	rm -rf $(OBJS) $(TARGET)

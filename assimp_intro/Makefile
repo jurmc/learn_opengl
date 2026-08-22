@@ -10,7 +10,7 @@ SRC_DIR := src
 OBJ_DIR := build
 BIN_DIR := bin
 
-TARGET := $(BIN_DIR)/model_browser
+TARGET := $(BIN_DIR)/browser
 SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS   := $(OBJS:.o=.d)
