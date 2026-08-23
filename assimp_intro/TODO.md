@@ -1,2 +1,2 @@
-- using imgui present some properites of loaded model
 - model should rotate arount z axis
+- change name os assimp_intor module into loader.cpp/hpp

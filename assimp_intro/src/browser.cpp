@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "assimp_intro.hpp"
+#include "gui.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -69,9 +70,6 @@ int main_browser(void) {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     ImGui::StyleColorsDark();
 
@@ -96,11 +94,11 @@ int main_browser(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    //Loader l("../kenney_car-kit/Models/GLB format/cone.glb");
-    //Loader l("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
-    //Loader l("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    Loader l("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
-    auto vertices = l.getVertices();
+    //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
+    Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    auto vertices = loader.getVertices();
     std::print("vertices.size(): {}\n", vertices.size());
     auto verticesNum = vertices.size();
     auto verticesSize = vertices.size() * sizeof(float);
@@ -179,9 +177,7 @@ int main_browser(void) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPointSize(5);
 
-    // State for ImGui
-    bool show_another_window = false;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    Gui gui;
 
     while (!glfwWindowShouldClose(window)) {
         // Start the Dear ImGui frame
@@ -190,33 +186,13 @@ int main_browser(void) {
         ImGui::NewFrame();
 
         // Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            ImGui::End();
-        }
+        gui.guiModelProperties(loader.getAiScene());
 
         // Rendering
         ImGui::Render();
-        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClearColor(0.2, 0.2, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // input
         processInput(window);
 
         // render commands
