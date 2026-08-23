@@ -1,3 +1,2 @@
-- model should rotate arount z axis
 - add info about faces to gui
 - try to visualize faces (instead of vertices as we have now)

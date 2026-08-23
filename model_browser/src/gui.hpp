@@ -6,7 +6,7 @@ class Gui {
 public:
     Gui();   
 
-    void guiModelProperties(const aiScene *scene);
+    void guiModelProperties(const aiScene *scene, double angle);
 
 private:
     ImGuiIO& mIo;

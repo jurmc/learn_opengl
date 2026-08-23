@@ -2,23 +2,28 @@
 #include "loader.hpp"
 #include "gui.hpp"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include<iostream>
 #include<vector>
 #include<print>
 
+
 const char *vsSource = "                                  \n"
     "#version 330 core                                    \n"
     "layout (location = 0) in vec3 aPos;                  \n"
+    "uniform mat4 model;                                  \n"
     "void main()                                          \n"
     "{                                                    \n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"
+    "    gl_Position = model * vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"
     "}                                                    \n";
 
 const char *fsSource1 = "\n"
@@ -96,8 +101,8 @@ int main_browser(void) {
 
     //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
-    Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     auto vertices = loader.getVertices();
     std::print("vertices.size(): {}\n", vertices.size());
     auto verticesNum = vertices.size();
@@ -178,6 +183,7 @@ int main_browser(void) {
     glPointSize(5);
 
     Gui gui;
+    double angle;
 
     while (!glfwWindowShouldClose(window)) {
         // Start the Dear ImGui frame
@@ -185,8 +191,14 @@ int main_browser(void) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        gui.guiModelProperties(loader.getAiScene());
+
+        angle = 6.0f * glfwGetTime();
+        gui.guiModelProperties(loader.getAiScene(), angle);
+        auto model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        int modelLoc = glGetUniformLocation(shaderProgram1, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         // Rendering
         ImGui::Render();
