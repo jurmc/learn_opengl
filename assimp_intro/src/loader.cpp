@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "assimp_intro.hpp"
+#include "loader.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

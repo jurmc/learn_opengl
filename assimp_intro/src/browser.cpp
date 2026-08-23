@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "assimp_intro.hpp"
+#include "loader.hpp"
 #include "gui.hpp"
 
 #include <glad/glad.h>

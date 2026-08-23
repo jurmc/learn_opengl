@@ -1,2 +1,3 @@
 - model should rotate arount z axis
-- change name os assimp_intor module into loader.cpp/hpp
+- add info about faces to gui
+- try to visualize faces (instead of vertices as we have now)
