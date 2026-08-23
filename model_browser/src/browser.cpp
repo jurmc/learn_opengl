@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "loader.hpp"
 #include "gui.hpp"
+#include "shader.hpp"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -16,23 +17,6 @@
 #include<vector>
 #include<print>
 
-
-const char *vsSource = "                                  \n"
-    "#version 330 core                                    \n"
-    "layout (location = 0) in vec3 aPos;                  \n"
-    "uniform mat4 model;                                  \n"
-    "void main()                                          \n"
-    "{                                                    \n"
-    "    gl_Position = model * vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"
-    "}                                                    \n";
-
-const char *fsSource1 = "\n"
-    "#version 330 core                             \n"
-    "out vec4 FragColor;                           \n"
-    "                                              \n"
-    "void main() {                                 \n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n"
-    "}                                             \n";
 
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -112,42 +96,7 @@ int main_browser(void) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vsSource, NULL);
-    glCompileShader(vs);
-
-    int rc;
-    char infoLog[512];
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &rc);
-    if (!rc) {
-        glGetShaderInfoLog(vs, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    unsigned int fs1 = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs1, 1, &fsSource1, NULL);
-    glCompileShader(fs1);
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &rc);
-    if (!rc) {
-        glGetShaderInfoLog(fs1, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    unsigned int shaderProgram1 = glCreateProgram();
-    glAttachShader(shaderProgram1, vs);
-    glAttachShader(shaderProgram1, fs1);
-    glLinkProgram(shaderProgram1);
-    glGetProgramiv(shaderProgram1, GL_LINK_STATUS, &rc);
-    if (!rc) {
-        glGetProgramInfoLog(shaderProgram1, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
-    glDeleteShader(vs);
-    glDeleteShader(fs1);
+    Shader myShaders("shaders/default.vs", "shaders/default.fs");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPointSize(5);
@@ -167,8 +116,7 @@ int main_browser(void) {
         auto model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        int modelLoc = glGetUniformLocation(shaderProgram1, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        myShaders.setMat4("model", model);
 
         // Rendering
         ImGui::Render();
@@ -181,8 +129,8 @@ int main_browser(void) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // 1st triangle
-        glUseProgram(shaderProgram1);
+
+        myShaders.use();
         glBindVertexArray(VAO1);
         glDrawArrays(GL_POINTS, 0, verticesNum);
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

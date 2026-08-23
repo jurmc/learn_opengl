@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -I ../deps/usr/local/include
+CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I ../deps/usr/local/include
 
 LDFLAGS = -L ../deps/usr/local/lib
 
@@ -12,7 +12,7 @@ BIN_DIR := bin
 TARGET := $(BIN_DIR)/browser
 SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
-DEPS   := $(OBJS:.o=.d)
+DEPS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.d, $(SRCS))
 
 .PHONY: all clean
 
@@ -21,7 +21,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(OBJ_DIR)/%.d | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR) $(BIN_DIR):
