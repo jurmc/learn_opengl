@@ -34,14 +34,6 @@ const char *fsSource1 = "\n"
     "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); \n"
     "}                                             \n";
 
-const char *fsSource2 = "\n"
-    "#version 330 core                             \n"
-    "out vec4 FragColor;                           \n"
-    "                                              \n"
-    "void main() {                                 \n"
-    "    FragColor = vec4(1.0f, 1.0f, 0.2f, 1.0f); \n"
-    "}                                             \n";
-
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
@@ -143,16 +135,6 @@ int main_browser(void) {
         std::cout << infoLog << std::endl;
     }
 
-    unsigned int fs2 = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs2, 1, &fsSource2, NULL);
-    glCompileShader(fs2);
-    glGetShaderiv(vs, GL_COMPILE_STATUS, &rc);
-    if (!rc) {
-        glGetShaderInfoLog(fs2, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
     unsigned int shaderProgram1 = glCreateProgram();
     glAttachShader(shaderProgram1, vs);
     glAttachShader(shaderProgram1, fs1);
@@ -164,20 +146,8 @@ int main_browser(void) {
         std::cout << infoLog << std::endl;
     }
 
-    unsigned int shaderProgram2 = glCreateProgram();
-    glAttachShader(shaderProgram2, vs);
-    glAttachShader(shaderProgram2, fs2);
-    glLinkProgram(shaderProgram2);
-    glGetProgramiv(vs, GL_LINK_STATUS, &rc);
-    if (!rc) {
-        glGetProgramInfoLog(shaderProgram2, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED" << std::endl;
-        std::cout << infoLog << std::endl;
-    }
-
     glDeleteShader(vs);
     glDeleteShader(fs1);
-    glDeleteShader(fs2);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPointSize(5);
