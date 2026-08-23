@@ -17,6 +17,9 @@ void Gui::guiModelProperties(const aiScene *scene, double angle) {
     ImGui::Text("Model file name: %s", "empty");
     ImGui::Text("aiScene->mName: %s", scene->mName.C_Str()); 
     ImGui::Text("mNumMeshes: %d", scene->mNumMeshes); 
+    for (size_t i = 0; i < scene->mNumMeshes; i++) {
+        ImGui::Text("mesh[%d] numFaces: %d", i, scene->mMeshes[i]->mNumFaces); 
+    }
 
     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit float using a slider from 0.0f to 1.0f
     ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit floats representing a color

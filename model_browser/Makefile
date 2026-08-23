@@ -1,6 +1,5 @@
 CXX = g++
 CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I ../deps/usr/local/include
-
 LDFLAGS = -L ../deps/usr/local/lib
 
 LIBS = -l:glad.a -l:imgui.a -lassimp -lglfw -lGL
