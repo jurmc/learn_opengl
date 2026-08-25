@@ -10,7 +10,41 @@
 
 Loader::Loader(const std::string &filename) :
     mFilename(std::string(filename)),
-    mImporter() {
+    mImporter(),
+    mVertices()
+    {
+        if ("test" == filename) {
+            mScene = new aiScene();
+
+            float arr[] = {
+                //0.2f, 0.2f, 0.2f,   
+                //-0.2f, -0.2f, -0.2f,   
+
+                0.1f, 0.1f, 0.0f,
+                0.7f, 0.1f, 0.0f,
+                0.7f, 0.7f, 0.0f,
+
+                0.1f, -0.1f, 0.0f,
+                0.7f, -0.1f, 0.0f,
+                0.7f, -0.7f, 0.0f,
+
+                -0.1f, 0.1f, 0.0f,
+                -0.7f, 0.1f, 0.0f,
+                -0.7f, 0.7f, 0.0f,
+
+                -0.1f, -0.1f, 0.0f,
+                -0.7f, -0.1f, 0.0f,
+                -0.7f, -0.7f, 0.0f,
+            };
+            mVertices.insert(mVertices.begin(), arr, arr + std::size(arr));
+
+            for (auto &i : mVertices) {
+                std::println("i: {}", i);
+            }
+
+            return;
+    }
+
     mScene = mImporter.ReadFile(
             mFilename,
             aiProcess_CalcTangentSpace

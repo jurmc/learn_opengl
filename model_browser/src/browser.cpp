@@ -78,11 +78,15 @@ int main_browser(void) {
     //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/tractor.glb");
+    Loader loader("test");
+
     auto vertices = loader.getVertices();
-    std::print("vertices.size(): {}\n", vertices.size());
     auto verticesNum = vertices.size();
     auto verticesSize = vertices.size() * sizeof(float);
+    std::print("verticesNum: {}\n", verticesNum);
+    std::print("verticesSize: {}\n", verticesSize);
 
     unsigned int VAO1;
     glGenVertexArrays(1, &VAO1);
@@ -132,8 +136,11 @@ int main_browser(void) {
 
         myShaders.use();
         glBindVertexArray(VAO1);
-        glDrawArrays(GL_POINTS, 0, verticesNum);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // TODO: use ImGUI to choose way we present model (vertices, wirefame or face or sth else in future)
+        //glDrawArrays(GL_POINTS, 0, verticesNum);
+        glDrawArrays(GL_TRIANGLES, 0, verticesNum/3); // TODO: verticesNum/3 is temp hack
+        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

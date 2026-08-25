@@ -17,7 +17,7 @@ all: $(TARGET)
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	ar rcs $(TARGET) $(OBJS)
 
-$(OBJ_DIR)/%.o: %.cpp $(OBJ_DIR)/%.d | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR) $(LIB_DIR):
