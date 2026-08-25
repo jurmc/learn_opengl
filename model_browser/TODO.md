@@ -1,1 +1,2 @@
+- stary using EBO for my 4 triangles (test mesh)
 - try to visualize faces (instead of vertices as we have now)
