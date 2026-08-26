@@ -77,33 +77,41 @@ int main_browser(void) {
 
     //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/tractor.glb");
-    Loader loader("test");
+    //Loader loader("../kenney_car-kit/Models/GLB format/cube.glb");
+    //Loader loader("test");
+
+    Shader myShaders("shaders/default.vs", "shaders/default.fs");
 
     auto vertices = loader.getVertices();
     auto verticesNum = vertices.size();
-    auto verticesSize = vertices.size() * sizeof(float);
-    std::print("verticesNum: {}\n", verticesNum);
-    std::print("verticesSize: {}\n", verticesSize);
+    auto verticesSize = sizeof(float) * verticesNum;
 
-    unsigned int VAO1;
-    glGenVertexArrays(1, &VAO1);
-    glBindVertexArray(VAO1);
+    auto indices = loader.getIndices();
+    auto indicesNum = indices.size();
+    auto indicesSize = sizeof(unsigned int) * indicesNum;
 
-    unsigned int VBO1;
-    glGenBuffers(1, &VBO1);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    Shader myShaders("shaders/default.vs", "shaders/default.fs");
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glPointSize(5);
+    glPointSize(3);
 
     Gui gui;
     double angle;
@@ -113,7 +121,6 @@ int main_browser(void) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
 
         angle = 6.0f * glfwGetTime();
         gui.guiModelProperties(loader.getAiScene(), angle);
@@ -134,13 +141,14 @@ int main_browser(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
 
-        myShaders.use();
-        glBindVertexArray(VAO1);
-
         // TODO: use ImGUI to choose way we present model (vertices, wirefame or face or sth else in future)
+        myShaders.use();
+
+        //glBindVertexArray(VAO);
         //glDrawArrays(GL_POINTS, 0, verticesNum);
-        glDrawArrays(GL_TRIANGLES, 0, verticesNum/3); // TODO: verticesNum/3 is temp hack
-        //glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(EBO);
+        glDrawElements(GL_TRIANGLES, indicesNum, GL_UNSIGNED_INT, 0);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

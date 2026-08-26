@@ -1,2 +1,2 @@
-- stary using EBO for my 4 triangles (test mesh)
-- try to visualize faces (instead of vertices as we have now)
+- visualise all meshes from model, each mesh should use different color
+- add scale to imgui and to shaders so we can dynamically scale model in view (later maybe we need to test for normalization, so our model always fits viewport)

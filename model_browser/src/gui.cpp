@@ -12,13 +12,13 @@ void Gui::guiModelProperties(const aiScene *scene, double angle) {
     static float f = 0.0f;
     static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+    ImGui::Begin("Model properties");
 
     ImGui::Text("Model file name: %s", "empty");
     ImGui::Text("aiScene->mName: %s", scene->mName.C_Str()); 
     ImGui::Text("mNumMeshes: %d", scene->mNumMeshes); 
     for (size_t i = 0; i < scene->mNumMeshes; i++) {
-        ImGui::Text("mesh[%d] numFaces: %d", i, scene->mMeshes[i]->mNumFaces); 
+        ImGui::Text("mesh[%zu] numFaces: %d", i, scene->mMeshes[i]->mNumFaces);
     }
 
     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit float using a slider from 0.0f to 1.0f
