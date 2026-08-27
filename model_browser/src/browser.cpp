@@ -15,6 +15,7 @@
 
 #include<iostream>
 #include<vector>
+#include<map>
 #include<print>
 
 
@@ -77,11 +78,11 @@ int main_browser(void) {
 
     //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
-    Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/tractor.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/cube.glb");
-    //Loader loader("test");
+    Loader loader("test");
 
     Shader myShaders("shaders/default.vs", "shaders/default.fs");
 
@@ -146,6 +147,18 @@ int main_browser(void) {
 
         //glBindVertexArray(VAO);
         //glDrawArrays(GL_POINTS, 0, verticesNum);
+
+        static std::vector<glm::vec4> colors {
+            glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
+            glm::vec4(0.0f, 1.0f, 0.0f, 1.0f),
+            glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
+        };
+        static unsigned int colorId = 0;
+        myShaders.setVec4("color", colors[colorId]);
+        //++colorId;
+        if (colorId >= colors.size()) {
+            colorId = 0;
+        }
 
         glBindVertexArray(EBO);
         glDrawElements(GL_TRIANGLES, indicesNum, GL_UNSIGNED_INT, 0);

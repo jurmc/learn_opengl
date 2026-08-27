@@ -13,7 +13,8 @@ Loader::Loader(const std::string &filename) :
     mFilename(std::string(filename)),
     mImporter(),
     mVertices(),
-    mIndices()
+    mIndices(),
+    mMeshes()
     {
         if ("test" == filename) {
             mScene = new aiScene();
@@ -43,9 +44,7 @@ Loader::Loader(const std::string &filename) :
             };
             mIndices.insert(mIndices.begin(), arrIndices, arrIndices + std::size(arrIndices));
 
-            for (auto &i : mVertices) {
-                std::println("i: {}", i);
-            }
+            mMeshes.push_back(std::tuple<Vertices, Indices>(mVertices, mIndices));
 
             return;
     }

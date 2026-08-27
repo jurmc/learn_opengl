@@ -3,18 +3,27 @@
 
 #include<string>
 #include<vector>
-#include<print>
+
+using Vertices = std::vector<float>;
+using Indices = std::vector<unsigned int>;
+using Meshes = std::vector<std::tuple<Vertices, Indices>>;
 
 class Loader {
 public:
     Loader(const std::string &filename);
 
+    // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };
     std::vector<float> getVertices() {return mVertices;};
+    std::vector<unsigned int> getIndices() {return mIndices;};
+    Meshes getMeshes() { return mMeshes; };
 
 private:
     std::string mFilename;
     Assimp::Importer mImporter;
     const aiScene *mScene;
-    std::vector<float> mVertices;
+    Vertices mVertices;
+    Indices mIndices;
+    Meshes mMeshes;
 };
+
