@@ -8,12 +8,11 @@
 #include <print>
 #include <vector>
 #include <cassert>
+#include <utility>
 
 Loader::Loader(const std::string &filename) :
     mFilename(std::string(filename)),
     mImporter(),
-    mVertices(),
-    mIndices(),
     mMeshes()
     {
         if ("test" == filename) {
@@ -34,7 +33,11 @@ Loader::Loader(const std::string &filename) :
                 -0.7f, -0.1f, 0.0f,
                 -0.7f, -0.7f, 0.0f,
             };
-            mVertices.insert(mVertices.begin(), arrVertices, arrVertices + std::size(arrVertices));
+
+            Vertices vertices;
+            Indices indices;
+
+            vertices.insert(vertices.begin(), arrVertices, arrVertices + std::size(arrVertices));
 
             unsigned int arrIndices[] = {
                 0, 1, 2,
@@ -42,9 +45,18 @@ Loader::Loader(const std::string &filename) :
                 0, 5, 6,
                 0, 7, 8,
             };
-            mIndices.insert(mIndices.begin(), arrIndices, arrIndices + std::size(arrIndices));
+            indices.insert(indices.begin(), arrIndices, arrIndices + std::size(arrIndices));
 
-            mMeshes.push_back(std::tuple<Vertices, Indices>(mVertices, mIndices));
+            mMeshes.push_back(std::tuple<Vertices, Indices>(vertices, indices));
+
+            Vertices secondMesh{};
+            for (size_t i = 0; i < indices.size(); i += 3) {
+                secondMesh.push_back(indices[i]);
+                secondMesh.push_back(indices[i+1]);
+                secondMesh.push_back(indices[i+2]-0.5);
+            }
+
+            mMeshes.push_back(std::tuple<Vertices, Indices>(secondMesh, indices));
 
             return;
     }
@@ -62,27 +74,34 @@ Loader::Loader(const std::string &filename) :
     }
 
     if (mScene->mNumMeshes > 0) {
-        if (   mScene->mRootNode
-            && mScene->HasMeshes()) {
-            if (mScene->mRootNode->mNumMeshes > 0) {
-                auto meshIdx = mScene->mRootNode->mMeshes[0];
-                auto m = mScene->mMeshes[meshIdx];
+        if (   mScene && mScene->HasMeshes()) {
+            if (mScene->mNumMeshes > 0) {
+                std::println("mNumMeshes: {}", mScene->mNumMeshes);
+                for (size_t i = 0; i < mScene->mNumMeshes; ++i) {
+                    auto m = mScene->mMeshes[i];
 
-                for (auto i = 0u; i < m->mNumVertices; ++i) {
-                    mVertices.push_back(m->mVertices[i].x);
-                    mVertices.push_back(m->mVertices[i].y);
-                    mVertices.push_back(m->mVertices[i].z);
-                }
+                    Vertices vertices;
+                    Indices indices;
 
-                assert(m->HasFaces());
+                    for (auto i = 0u; i < m->mNumVertices; ++i) {
+                        vertices.push_back(m->mVertices[i].x);
+                        vertices.push_back(m->mVertices[i].y);
+                        vertices.push_back(m->mVertices[i].z);
+                    }
 
-                for (auto i = 0u; i < m->mNumFaces; ++i) {
-                    auto face = m->mFaces[i];
-                    assert(3 == face.mNumIndices);
+                    assert(m->HasFaces());
 
-                    mIndices.push_back(face.mIndices[0]);
-                    mIndices.push_back(face.mIndices[1]);
-                    mIndices.push_back(face.mIndices[2]);
+                    for (auto i = 0u; i < m->mNumFaces; ++i) {
+                        auto face = m->mFaces[i];
+                        assert(3 == face.mNumIndices);
+
+                        indices.push_back(face.mIndices[0]);
+                        indices.push_back(face.mIndices[1]);
+                        indices.push_back(face.mIndices[2]);
+                    }
+
+                    std::println("loaded: ver num {}, ind num {}", vertices.size(), indices.size());
+                    mMeshes.push_back(std::tuple<Vertices, Indices>(vertices, indices));
                 }
             }
         }

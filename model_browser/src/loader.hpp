@@ -14,16 +14,12 @@ public:
 
     // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };
-    std::vector<float> getVertices() {return mVertices;};
-    std::vector<unsigned int> getIndices() {return mIndices;};
     Meshes getMeshes() { return mMeshes; };
 
 private:
     std::string mFilename;
     Assimp::Importer mImporter;
     const aiScene *mScene;
-    Vertices mVertices;
-    Indices mIndices;
     Meshes mMeshes;
 };
 
