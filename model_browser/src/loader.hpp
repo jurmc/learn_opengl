@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include "mesh.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -6,19 +7,6 @@
 #include<string>
 #include<vector>
 #include<tuple>
-
-using Vertices = std::vector<float>;
-using Indices = std::vector<unsigned int>;
-using Meshes = std::vector<std::tuple<Vertices, Indices>>;
-
-class Mesh {
-    public:
-        Mesh(std::tuple<Vertices, Indices> &tuple);
-        void Draw(const Shader &shader);
-
-    private:
-        std::vector<std::tuple<unsigned int, size_t>> mVaosAndIndicesNums; // TODO: will become vector of actual Mesh class
-};
 
 class Loader {
 public:
