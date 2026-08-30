@@ -12,7 +12,7 @@ public:
 
     Shader(const char* vertexPath, const char* fragmentPath);
 
-    void use();
+    void use() const;
 
     void setBool(const char* name, bool val) const;
     void setInt(const char* name, int val) const;

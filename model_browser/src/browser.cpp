@@ -76,47 +76,18 @@ int main_browser(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    //Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
+    Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/tractor.glb");
     //Loader loader("../kenney_car-kit/Models/GLB format/cube.glb");
     //Loader loader("test");
 
-    Shader myShaders("shaders/default.vs", "shaders/default.fs");
+    Shader shader("shaders/default.vs", "shaders/default.fs");
 
-    auto meshes = loader.getMeshes();
-    std::vector<std::tuple<unsigned int, size_t>> vaosAndIndicesNums;
-    for (auto& [vertices, indices] : meshes) {
-        std::println("got mesh");
-
-        auto verticesNum = vertices.size();
-        auto verticesSize = sizeof(float) * verticesNum;
-
-        auto indicesNum = indices.size();
-        auto indicesSize = sizeof(unsigned int) * indicesNum;
-
-        unsigned int VAO;
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        unsigned int EBO;
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
-
-        vaosAndIndicesNums.push_back(std::tuple<unsigned int, size_t>(VAO, indicesNum));
-    }
-
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPointSize(3);
 
@@ -130,45 +101,19 @@ int main_browser(void) {
         ImGui::NewFrame();
 
         angle = 6.0f * glfwGetTime();
-        gui.guiModelProperties(loader.getAiScene(), angle);
+        gui.guiModelProperties(loader.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
         auto model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
         model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        myShaders.setMat4("model", model);
+        shader.setMat4("model", model);
 
         // Rendering
         ImGui::Render();
-        glClearColor(0.2, 0.2, 0.2, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         processInput(window);
-
-        // render commands
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-
-        // TODO: use ImGUI to choose way we present model (vertices, wirefame or face or sth else in future)
-        myShaders.use();
-
-        for (auto& [vao, num] : vaosAndIndicesNums) {
-            static std::vector<glm::vec4> colors {
-                glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                    glm::vec4(0.0f, 1.0f, 0.0f, 1.0f),
-                    glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
-            };
-            static unsigned int colorId = 0;
-
-            myShaders.setVec4("color", colors[colorId]);
-            ++colorId;
-            if (colorId >= colors.size()) {
-                colorId = 0;
-            }
-
-            glBindVertexArray(vao);
-            glDrawElements(GL_TRIANGLES, num, GL_UNSIGNED_INT, 0);
-        }
-
+        loader.Draw(shader); // TODO: ultimately this won't be call to loader, but loader will return model, and here we call Draw on Mode
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // hanlde events, and swap buffers
