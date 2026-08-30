@@ -11,6 +11,15 @@ using Vertices = std::vector<float>;
 using Indices = std::vector<unsigned int>;
 using Meshes = std::vector<std::tuple<Vertices, Indices>>;
 
+class Mesh {
+    public:
+        Mesh(std::tuple<Vertices, Indices> &tuple);
+        void Draw(const Shader &shader);
+
+    private:
+        std::vector<std::tuple<unsigned int, size_t>> mVaosAndIndicesNums; // TODO: will become vector of actual Mesh class
+};
+
 class Loader {
 public:
     Loader(const std::string &filename);
@@ -22,11 +31,11 @@ public:
     void ProsessMesh(std::tuple<Vertices, Indices> &tuple);
     void Draw(const Shader &s);
     std::vector<std::tuple<unsigned int, size_t>> mVaosAndIndicesNums; // TODO: will become vector of actual Mesh class
+    std::vector<Mesh> mMeshes;
 
 private:
     std::string mFilename;
     Assimp::Importer mImporter;
     const aiScene *mScene;
-    Meshes mMeshes;
 };
 
