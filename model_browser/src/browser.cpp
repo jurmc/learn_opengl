@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "loader.hpp"
+#include "model.hpp"
 #include "gui.hpp"
 #include "shader.hpp"
 
@@ -29,8 +29,6 @@ static void glfw_error_callback(int error, const char* description)
 }
 
 int main_browser(void) {
-    std::cout << "Model Browser, hello!" << std::endl;
-
     glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -74,13 +72,13 @@ int main_browser(void) {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
     std::cout << "Max vertex attributes: " << nAttributes << std::endl;
 
-    Loader loader("../kenney_car-kit/Models/GLB format/cone.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/tractor.glb");
-    //Loader loader("../kenney_car-kit/Models/GLB format/cube.glb");
-    //Loader loader("test");
+    //Model model("../kenney_car-kit/Models/GLB format/cone.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb");
+    Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/tractor.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/cube.glb");
+    //Model model("test");
 
     Shader shader("shaders/default.vs", "shaders/default.fs");
 
@@ -99,11 +97,11 @@ int main_browser(void) {
         ImGui::NewFrame();
 
         angle = 6.0f * glfwGetTime();
-        gui.guiModelProperties(loader.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
-        auto model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        shader.setMat4("model", model);
+        gui.guiModelProperties(model.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
+        auto modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::rotate(modelTransform, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
+        modelTransform = glm::rotate(modelTransform, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        shader.setMat4("model", modelTransform);
 
         // Rendering
         ImGui::Render();
@@ -111,7 +109,7 @@ int main_browser(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         processInput(window);
-        loader.Draw(shader); // TODO: ultimately this won't be call to loader, but loader will return model, and here we call Draw on Mode
+        model.Draw(shader);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // hanlde events, and swap buffers

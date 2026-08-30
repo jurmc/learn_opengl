@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "loader.hpp"
+#include "model.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -11,7 +11,7 @@
 #include <utility>
 #include <tuple>
 
-Loader::(const std::string &filename) :
+Model::Model(const std::string &filename) :
     mMeshes(),
     mFilename(std::string(filename))
     {
@@ -64,7 +64,7 @@ Loader::(const std::string &filename) :
     }
 }
 
-void Loader::ProsessMesh(std::tuple<Vertices, Indices> &tuple) {
+void Model::ProsessMesh(std::tuple<Vertices, Indices> &tuple) {
     auto [vertices, indices] = tuple;
     auto verticesNum = vertices.size();
     auto verticesSize = sizeof(float) * verticesNum;
@@ -90,7 +90,7 @@ void Loader::ProsessMesh(std::tuple<Vertices, Indices> &tuple) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
 }
 
-void Loader::Draw(const Shader &shader) {
+void Model::Draw(const Shader &shader) {
     for (auto& m: mMeshes) {
         m.Draw(shader);
     }

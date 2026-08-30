@@ -8,9 +8,9 @@
 #include<vector>
 #include<tuple>
 
-class Loader {
+class Model {
 public:
-    Loader(const std::string &filename);
+    Model(const std::string &filename);
 
     // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };
