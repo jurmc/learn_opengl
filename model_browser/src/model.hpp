@@ -18,12 +18,10 @@ public:
     // This part will become part of interface of Model and Mesh later, and this Loader class will be returning Model (containing Meshes)
     void ProsessMesh(std::tuple<Vertices, Indices> &tuple);
     void Draw(const Shader &s);
-    std::vector<std::tuple<unsigned int, size_t>> mVaosAndIndicesNums; // TODO: will become vector of actual Mesh class
     std::vector<Mesh> mMeshes;
 
 private:
     std::string mFilename;
-    Assimp::Importer mImporter;
     const aiScene *mScene;
 };
 
