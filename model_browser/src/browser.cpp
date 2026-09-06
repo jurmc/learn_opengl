@@ -16,6 +16,10 @@
 #include<iostream>
 #include<print>
 
+static void glfw_error_callback(int error, const char* description)
+{
+    std::println(stderr, "GLFW Error %d: %s\n", error, description);
+}
 
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -63,13 +67,12 @@ int main_browser(void) {
 
     glViewport(0, 0, 800, 600);
 
-    //Model model("../kenney_car-kit/Models/GLB format/cone.glb");
+    Model model("../kenney_car-kit/Models/GLB format/cone.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     //Model model("../kenney_car-kit/Models/GLB format/tractor.glb");
     //Model model("../kenney_car-kit/Models/GLB format/cube.glb");
-    //Model model("test");
 
     Shader shader("shaders/default.vs", "shaders/default.fs");
 
