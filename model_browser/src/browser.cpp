@@ -23,11 +23,6 @@ void processInput(GLFWwindow *window) {
     }
 }
 
-static void glfw_error_callback(int error, const char* description)
-{
-    std::println(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
 int main_browser(void) {
     glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
@@ -68,10 +63,6 @@ int main_browser(void) {
 
     glViewport(0, 0, 800, 600);
 
-    int nAttributes;
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nAttributes);
-    std::cout << "Max vertex attributes: " << nAttributes << std::endl;
-
     //Model model("../kenney_car-kit/Models/GLB format/cone.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb");
@@ -85,7 +76,6 @@ int main_browser(void) {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glPointSize(3);
 
     Gui gui;
     double angle;

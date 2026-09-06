@@ -1,14 +1,14 @@
 CXX = g++
-CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I ../deps/usr/local/include
-LDFLAGS = -L ../deps/usr/local/lib
+CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I ../../deps/usr/local/include
+LDFLAGS = -L ../../deps/usr/local/lib
 
-LIBS = -l:glad.a -l:imgui.a -lassimp -lglfw -lGL
+LIBS = -l:glad.a -lglfw -lGL
 
-SRC_DIR := src
+SRC_DIR := ./
 OBJ_DIR := build
 BIN_DIR := bin
 
-TARGET := $(BIN_DIR)/browser
+TARGET := $(BIN_DIR)/texture
 SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS := $(OBJS:.o=.d)
