@@ -16,7 +16,6 @@ public:
     const aiScene *getAiScene() { return mScene; };
 
     // This part will become part of interface of Model and Mesh later, and this Loader class will be returning Model (containing Meshes)
-    void ProsessMesh(std::tuple<Vertices, Indices> &tuple);
     void Draw(const Shader &s);
     std::vector<Mesh> mMeshes;
 

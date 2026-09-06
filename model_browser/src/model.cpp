@@ -10,6 +10,7 @@
 #include <cassert>
 #include <utility>
 #include <tuple>
+#include <set>
 
 Model::Model(const std::string &filename) :
     mMeshes(),
@@ -39,10 +40,15 @@ Model::Model(const std::string &filename) :
                     Vertices vertices;
                     Indices indices;
 
+                    assert(m->mNumUVComponents[0] > 0);
+
                     for (auto i = 0u; i < m->mNumVertices; ++i) {
                         vertices.push_back(m->mVertices[i].x);
                         vertices.push_back(m->mVertices[i].y);
                         vertices.push_back(m->mVertices[i].z);
+
+                        vertices.push_back(m->mTextureCoords[0][i].x);
+                        vertices.push_back(m->mTextureCoords[0][i].y);
                     }
 
                     assert(m->HasFaces());
@@ -56,38 +62,15 @@ Model::Model(const std::string &filename) :
                         indices.push_back(face.mIndices[2]);
                     }
 
+                    std::println("Num vertices: {}", m->mNumVertices);
+                    std::println("Vec size: {}", vertices.size());
+
                     auto newMesh = std::tuple<Vertices, Indices>(vertices, indices);
                     mMeshes.push_back(Mesh(newMesh));
                 }
             }
         }
     }
-}
-
-void Model::ProsessMesh(std::tuple<Vertices, Indices> &tuple) {
-    auto [vertices, indices] = tuple;
-    auto verticesNum = vertices.size();
-    auto verticesSize = sizeof(float) * verticesNum;
-
-    auto indicesNum = indices.size();
-    auto indicesSize = sizeof(unsigned int) * indicesNum;
-
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices.data(), GL_STATIC_DRAW);
 }
 
 void Model::Draw(const Shader &shader) {
