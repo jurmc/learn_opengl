@@ -4,6 +4,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include <print>
 #include <vector>
@@ -11,14 +13,17 @@
 #include <utility>
 #include <tuple>
 #include <set>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Model::Model(const std::string &filename) :
     mMeshes(),
-    mFilename(std::string(filename))
+    mFilename(std::string(filename)),
+    mImporter()
     {
 
-    Assimp::Importer importer;
-    mScene = importer.ReadFile(
+    mScene = mImporter.ReadFile(
             mFilename,
             aiProcess_CalcTangentSpace
             | aiProcess_Triangulate
@@ -30,10 +35,21 @@ Model::Model(const std::string &filename) :
         // TODO: exit error here
     }
 
+    for (size_t i = 0; i < mScene->mNumMaterials; ++i) {
+        auto material = mScene->mMaterials[i];
+        auto texCnt = material->GetTextureCount(aiTextureType_DIFFUSE);
+        if (texCnt > 0) {
+            aiString filePath;
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &filePath);
+            std::string fullFilePath = std::string(fs::path(fs::path(mFilename).parent_path())) + "/" + filePath.C_Str();
+            Texture texture(fullFilePath.c_str());
+            mTextures.insert({i, texture});
+        }
+    }
+
     if (mScene->mNumMeshes > 0) {
         if (   mScene && mScene->HasMeshes()) {
             if (mScene->mNumMeshes > 0) {
-                std::println("mNumMeshes: {}", mScene->mNumMeshes);
                 for (size_t i = 0; i < mScene->mNumMeshes; ++i) {
                     auto m = mScene->mMeshes[i];
 
@@ -62,11 +78,9 @@ Model::Model(const std::string &filename) :
                         indices.push_back(face.mIndices[2]);
                     }
 
-                    std::println("Num vertices: {}", m->mNumVertices);
-                    std::println("Vec size: {}", vertices.size());
-
-                    auto newMesh = std::tuple<Vertices, Indices>(vertices, indices);
-                    mMeshes.push_back(Mesh(newMesh));
+                    auto mesh = std::tuple<Vertices, Indices>(vertices, indices);
+                    unsigned int GPUTextureId = mTextures.at(m->mMaterialIndex).getGPUId();
+                    mMeshes.push_back(Mesh(mesh, GPUTextureId));
                 }
             }
         }

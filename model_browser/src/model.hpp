@@ -1,12 +1,13 @@
 #include "shader.hpp"
 #include "mesh.hpp"
+#include "texture.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
 #include<string>
 #include<vector>
-#include<tuple>
+#include<map>
 
 class Model {
 public:
@@ -15,12 +16,13 @@ public:
     // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };
 
-    // This part will become part of interface of Model and Mesh later, and this Loader class will be returning Model (containing Meshes)
     void Draw(const Shader &s);
-    std::vector<Mesh> mMeshes;
 
 private:
+    std::vector<Mesh> mMeshes;
+    std::map<unsigned int, Texture> mTextures;
     std::string mFilename;
+    Assimp::Importer mImporter;
     const aiScene *mScene;
 };
 

@@ -67,10 +67,10 @@ int main_browser(void) {
 
     glViewport(0, 0, 800, 600);
 
-    Model model("../kenney_car-kit/Models/GLB format/cone.glb");
+    //Model model("../kenney_car-kit/Models/GLB format/cone.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb");
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb");
-    //Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
+    Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb");
     //Model model("../kenney_car-kit/Models/GLB format/tractor.glb");
     //Model model("../kenney_car-kit/Models/GLB format/cube.glb");
 

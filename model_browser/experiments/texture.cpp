@@ -9,16 +9,19 @@
 #include <iostream>
 
 float vertices[] = {
-    /*  x      y     z        r     g    b        s     t */
-    -0.7f, -0.7f, 0.0f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f,
-     0.7f, -0.7f, 0.0f,    0.0f, 1.0f, 1.0f,   1.0f, 0.0f,
-     0.7f,  0.7f, 0.0f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
-    -0.7f,  0.7f, 0.0f,    0.0f, 0.0f, 1.0f,   0.0f, 1.0f,
+    /*  x           y     z        r     g    b            s     t */
+    -0.7f, -0.7f-0.1f, 0.0f,    1.0f, 0.0f, 0.0f,   0.71875f, 0.725f,
+     0.7f, -0.7f-0.1f, 0.0f,    0.0f, 1.0f, 1.0f,   0.71875f, 0.725f,
+     0.7f,  0.7f-0.1f, 0.0f,    1.0f, 0.0f, 0.0f,   0.71875f, 0.725f,
+
+    -0.7f, -0.7f+0.1f, 0.0f,    0.0f, 1.0f, 1.0f,   0.84375f, 0.47500002f,
+     0.7f,  0.7f+0.1f, 0.0f,    1.0f, 0.0f, 0.0f,   0.84375f, 0.47500002f,
+    -0.7f,  0.7f+0.1f, 0.0f,    0.0f, 0.0f, 1.0f,   0.84375f, 0.47500002f,
 };
 
 unsigned int indices[] = {
     0, 1, 2,
-    0, 2, 3,
+    3, 4, 5,
 };
 
 void processInput(GLFWwindow *window) {
@@ -108,6 +111,7 @@ int main() {
 
     shader.use();
     shader.setInt("ourTexture", 0);
+
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 

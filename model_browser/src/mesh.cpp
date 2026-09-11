@@ -5,7 +5,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-Mesh::Mesh(std::tuple<Vertices, Indices> &tuple) {
+Mesh::Mesh(std::tuple<Vertices, Indices> &tuple, unsigned int GPUTextureId) : mGPUTextureId(GPUTextureId) {
     auto [vertices, indices] = tuple;
     auto verticesNum = vertices.size();
     auto verticesSize = sizeof(float) * verticesNum;
@@ -38,20 +38,17 @@ Mesh::Mesh(std::tuple<Vertices, Indices> &tuple) {
 
 void Mesh::Draw(const Shader &shader) {
     shader.use();
-    unsigned int colorId = 1;
+    shader.setInt("ourTexture", 0); // TODO: this might be a call in constructor, it not need to be repeated upon Draw() calls
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, mGPUTextureId);
 
+    // TODO: is this loop really needed? mesh is just one I think...
     for (auto& [vao, num] : mVaosAndIndicesNums) {
         static std::vector<glm::vec4> colors {
             glm::vec4(1.0f, 0.0f, 0.0f, 1.0f),
                 glm::vec4(0.1f, 0.32f, 0.26f, 1.0f),
                 glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
         };
-
-        shader.setVec4("color", colors[colorId]);
-        ++colorId;
-        if (colorId >= colors.size()) {
-            colorId = 0;
-        }
 
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, num, GL_UNSIGNED_INT, 0);

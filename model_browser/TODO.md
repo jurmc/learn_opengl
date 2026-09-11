@@ -1,3 +1,2 @@
-- use color of Mesh from imported model
-- add simple light source to shaders
+- add simple light source to shaders (simple so diffusione is based just on distance to the light source)
 - add scale to imgui and to shaders so we can dynamically scale model in view (later maybe we need to test for normalization, so our model always fits viewport)
