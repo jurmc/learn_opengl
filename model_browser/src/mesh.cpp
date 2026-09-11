@@ -38,7 +38,6 @@ Mesh::Mesh(std::tuple<Vertices, Indices> &tuple, unsigned int GPUTextureId) : mG
 
 void Mesh::Draw(const Shader &shader) {
     shader.use();
-    shader.setInt("ourTexture", 0); // TODO: this might be a call in constructor, it not need to be repeated upon Draw() calls
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mGPUTextureId);
 

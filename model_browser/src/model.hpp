@@ -11,7 +11,7 @@
 
 class Model {
 public:
-    Model(const std::string &filename);
+    Model(const std::string &filename, const Shader &shader);
 
     // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };

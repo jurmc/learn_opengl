@@ -14,10 +14,11 @@
 #include <tuple>
 #include <set>
 #include <filesystem>
+#include <cstdlib>
 
 namespace fs = std::filesystem;
 
-Model::Model(const std::string &filename) :
+Model::Model(const std::string &filename, const Shader &shader) :
     mMeshes(),
     mFilename(std::string(filename)),
     mImporter()
@@ -30,12 +31,15 @@ Model::Model(const std::string &filename) :
             | aiProcess_JoinIdenticalVertices
             | aiProcess_SortByPType);
 
-    if (nullptr == mScene) { // TODO: wider check, see Joey The Vries
+    if (nullptr == mScene || mScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !mScene->mRootNode ) {
         std::print(stderr, "Error while importing file\n");
-        // TODO: exit error here
+        std::exit(1);
     }
 
     for (size_t i = 0; i < mScene->mNumMaterials; ++i) {
+        shader.setInt("ourTexture", 1); // note that at the moment we are not prepared to use more textures
+                                        // on the GPU side. If we have some model with more textures we have
+                                        // to think how to handle those texture ids, here and in shaders
         auto material = mScene->mMaterials[i];
         auto texCnt = material->GetTextureCount(aiTextureType_DIFFUSE);
         if (texCnt > 0) {
