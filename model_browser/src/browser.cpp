@@ -14,6 +14,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include<iostream>
+#include<utility>
 #include<print>
 
 static void glfw_error_callback(int error, const char* description)
@@ -41,7 +42,7 @@ int main_browser(void) {
         return -1;
     }
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
+    glfwSwapInterval(1);
 
     Gui gui(window);
 
@@ -73,7 +74,8 @@ int main_browser(void) {
         ImGui::NewFrame();
 
         angle = 6.0f * glfwGetTime();
-        gui.guiModelProperties(model.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
+        gui.ViewSettings();
+        gui.GuiModelProperties(model.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
         auto modelTransform = glm::mat4(1.0f);
         modelTransform = glm::rotate(modelTransform, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
         modelTransform = glm::rotate(modelTransform, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -85,6 +87,12 @@ int main_browser(void) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         processInput(window);
+        shader.setVec4("lightColor", glm::vec4(
+                    gui.mViewSettings.mLightColor.x,
+                    gui.mViewSettings.mLightColor.y,
+                    gui.mViewSettings.mLightColor.z,
+                    gui.mViewSettings.mLightColor.w));
+        shader.setFloat("lightStrength", gui.mViewSettings.mLightStrength);
         model.Draw(shader);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

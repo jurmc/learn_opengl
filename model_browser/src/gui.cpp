@@ -31,9 +31,31 @@ Gui::Gui(GLFWwindow *w)
     mIo->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 }
 
-void Gui::guiModelProperties(const aiScene *scene, double angle) {
-    static float f = 0.0f;
-    static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+void Gui::ViewSettings() {
+    ImGui::Begin("View settings");
+
+    if  (ImGui::TreeNode("Display method")) {
+        if (ImGui::Selectable("Wireframe", mViewSettings.mDisplayMethod == DisplayMethod::Wireframe)) {
+            mViewSettings.mDisplayMethod = DisplayMethod::Wireframe;
+        }
+        if (ImGui::Selectable("Solid", mViewSettings.mDisplayMethod == DisplayMethod::Solid)) {
+            mViewSettings.mDisplayMethod = DisplayMethod::Solid;
+        }
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Light")) {
+
+        ImGui::ColorEdit3("Color", (float*)&mViewSettings.mLightColor);
+        ImGui::SliderFloat("Strength", &mViewSettings.mLightStrength, 0.0f, 1.0f);            // Edit float using a slider from 0.0f to 1.0f
+
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+}
+
+void Gui::GuiModelProperties(const aiScene *scene, double angle) {
 
     ImGui::Begin("Model properties");
 
@@ -43,9 +65,6 @@ void Gui::guiModelProperties(const aiScene *scene, double angle) {
     for (size_t i = 0; i < scene->mNumMeshes; i++) {
         ImGui::Text("mesh[%zu] numFaces: %d", i, scene->mMeshes[i]->mNumFaces);
     }
-
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit float using a slider from 0.0f to 1.0f
-    ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit floats representing a color
 
     ImGui::Text("Angle %.1f", angle);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / mIo->Framerate, mIo->Framerate);

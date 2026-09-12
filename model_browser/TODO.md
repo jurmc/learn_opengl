@@ -1,3 +1,3 @@
+- solid and wireframe rendering modes
 - add scale to imgui and to shaders so we can dynamically scale model in view (later maybe we need to test for normalization, so our model always fits viewport)
-- add simple light source to shaders
 - control movements with the mouse (so vertex shader should now get some unioforms for model/view transformations
