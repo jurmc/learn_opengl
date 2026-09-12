@@ -71,7 +71,7 @@ Model::Model(const std::string &filename, const Shader &shader) :
                         vertices.push_back(m->mTextureCoords[0][i].y);
                     }
 
-                    assert(m->HasFaces());
+                    assert(m->HasFaces()); // TODO: let's move to loging such issues (instead of killng our app)
 
                     for (auto i = 0u; i < m->mNumFaces; ++i) {
                         auto face = m->mFaces[i];
@@ -82,9 +82,8 @@ Model::Model(const std::string &filename, const Shader &shader) :
                         indices.push_back(face.mIndices[2]);
                     }
 
-                    auto mesh = std::tuple<Vertices, Indices>(vertices, indices);
                     unsigned int GPUTextureId = mTextures.at(m->mMaterialIndex).getGPUId();
-                    mMeshes.push_back(Mesh(mesh, GPUTextureId));
+                    mMeshes.push_back(Mesh(vertices, indices, GPUTextureId));
                 }
             }
         }

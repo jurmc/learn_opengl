@@ -71,8 +71,8 @@ int main_browser(void) {
     //Model model("../kenney_car-kit/Models/GLB format/cone.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb", shader);
-    Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb", shader);
-    //Model model("../kenney_car-kit/Models/GLB format/tractor.glb", shader);
+    //Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb", shader);
+    Model model("../kenney_car-kit/Models/GLB format/tractor.glb", shader);  // Tractor seems to have vertices out side of [-1.0f 1.0f] range
     //Model model("../kenney_car-kit/Models/GLB format/cube.glb", shader);
 
     glEnable(GL_DEPTH_TEST);
