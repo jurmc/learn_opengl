@@ -1,11 +1,34 @@
 #include "gui.hpp"
 #include "imgui.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <assimp/scene.h>
 
-Gui::Gui() : mIo(ImGui::GetIO()) {
-    mIo.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    mIo.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+Gui::Gui(GLFWwindow *w)
+    : mWindow(w)
+{
+    float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
+         
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
+                                            //
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+    const char* glsl_version = nullptr;
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+    mIo = &ImGui::GetIO();
+    mIo->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    mIo->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 }
 
 void Gui::guiModelProperties(const aiScene *scene, double angle) {
@@ -25,6 +48,6 @@ void Gui::guiModelProperties(const aiScene *scene, double angle) {
     ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit floats representing a color
 
     ImGui::Text("Angle %.1f", angle);
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / mIo.Framerate, mIo.Framerate);
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / mIo->Framerate, mIo->Framerate);
     ImGui::End();
 }
