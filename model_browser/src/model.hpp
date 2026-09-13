@@ -1,6 +1,9 @@
+#pragma once
+
 #include "shader.hpp"
 #include "mesh.hpp"
 #include "texture.hpp"
+#include "view_settings.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -16,7 +19,7 @@ public:
     // TODO: return some cheap (const) references instead of copies
     const aiScene *getAiScene() { return mScene; };
 
-    void Draw(const Shader &s);
+    void Draw(const Shader &shader, const ViewSettings &viewSettings);
 
 private:
     std::vector<Mesh> mMeshes;

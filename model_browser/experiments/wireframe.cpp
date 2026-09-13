@@ -59,6 +59,7 @@ int main() {
 
     glViewport(0, 0, 800, 600);
     Shader shader("default.vs", "default.fs");
+    Shader shaderWireFrame("default.vs", "default.fs");
     
     GLuint VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -111,6 +112,8 @@ int main() {
 
     shader.use();
     shader.setInt("ourTexture", 0);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);

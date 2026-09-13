@@ -8,7 +8,7 @@ SRC_DIR := ./
 OBJ_DIR := build
 BIN_DIR := bin
 
-TARGET := $(BIN_DIR)/texture
+TARGET := $(BIN_DIR)/wireframe
 SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS := $(OBJS:.o=.d)

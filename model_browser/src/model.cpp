@@ -1,5 +1,5 @@
-#include "main.hpp"
 #include "model.hpp"
+#include "view_settings.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -90,8 +90,8 @@ Model::Model(const std::string &filename, const Shader &shader) :
     }
 }
 
-void Model::Draw(const Shader &shader) {
+void Model::Draw(const Shader &shader, const ViewSettings &viewSettings) {
     for (auto& m: mMeshes) {
-        m.Draw(shader);
+        m.Draw(shader, viewSettings);
     }
 }

@@ -1,4 +1,7 @@
+#pragma once
+
 #include "shader.hpp"
+#include "view_settings.hpp"
 
 using Vertices = std::vector<float>;
 using Indices = std::vector<unsigned int>;
@@ -8,7 +11,7 @@ using Indices = std::vector<unsigned int>;
 class Mesh {
     public:
         Mesh(Vertices vertices, Indices indices, unsigned int GPUTextureId); // TODO: typle here is overkill
-        void Draw(const Shader &shader);
+        void Draw(const Shader &shader, const ViewSettings &viewSettings);
 
     private:
         GLuint mVao;

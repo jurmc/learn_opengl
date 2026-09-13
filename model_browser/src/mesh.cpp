@@ -1,4 +1,6 @@
 #include "mesh.hpp"
+#include "view_settings.hpp"
+#include "shader.hpp"
 
 #include "glad/glad.h"
 
@@ -37,8 +39,13 @@ Mesh::Mesh(Vertices vertices, Indices indices, unsigned int GPUTextureId) : mGPU
     mIdxCnt = indicesNum;
 }
 
-void Mesh::Draw(const Shader &shader) {
+void Mesh::Draw(const Shader &shader, const ViewSettings &viewSettings) {
     shader.use();
+    if (DisplayMethod::Wireframe == viewSettings.mDisplayMethod) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mGPUTextureId);
     glBindVertexArray(mVao);

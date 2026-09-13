@@ -1,4 +1,3 @@
-#include "main.hpp"
 #include "model.hpp"
 #include "gui.hpp"
 #include "shader.hpp"
@@ -28,7 +27,7 @@ void processInput(GLFWwindow *window) {
     }
 }
 
-int main_browser(void) {
+int main(void) {
     glfwSetErrorCallback(glfw_error_callback);
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -54,11 +53,11 @@ int main_browser(void) {
     glViewport(0, 0, 800, 600);
     Shader shader("shaders/default.vs", "shaders/default.fs");
 
-    //Model model("../kenney_car-kit/Models/GLB format/cone.glb", shader);
+    Model model("../kenney_car-kit/Models/GLB format/cone.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb", shader);
-    Model model("../kenney_car-kit/Models/GLB format/tractor.glb", shader);  // Tractor seems to have vertices out side of [-1.0f 1.0f] range
+    //Model model("../kenney_car-kit/Models/GLB format/tractor.glb", shader);  // Tractor seems to have vertices out side of [-1.0f 1.0f] range
     //Model model("../kenney_car-kit/Models/GLB format/cube.glb", shader);
 
     glEnable(GL_DEPTH_TEST);
@@ -93,7 +92,7 @@ int main_browser(void) {
                     gui.mViewSettings.mLightColor.z,
                     gui.mViewSettings.mLightColor.w));
         shader.setFloat("lightStrength", gui.mViewSettings.mLightStrength);
-        model.Draw(shader);
+        model.Draw(shader, gui.mViewSettings);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // hanlde events, and swap buffers
