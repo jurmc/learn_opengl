@@ -53,12 +53,21 @@ int main(void) {
     glViewport(0, 0, 800, 600);
     Shader shader("shaders/default.vs", "shaders/default.fs");
 
-    Model model("../kenney_car-kit/Models/GLB format/cone.glb", shader);
+    // Car kit
+    //Model model("../kenney_car-kit/Models/GLB format/cone.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-bolt.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/debris-door.glb", shader);
-    //Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb", shader);
+    Model model("../kenney_car-kit/Models/GLB format/kart-oobi.glb", shader);
     //Model model("../kenney_car-kit/Models/GLB format/tractor.glb", shader);  // Tractor seems to have vertices out side of [-1.0f 1.0f] range
     //Model model("../kenney_car-kit/Models/GLB format/cube.glb", shader);
+    // Cube pets
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-bee.glb", shader);
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-elephant.glb", shader);
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-parrot.glb", shader);
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-bunny.glb", shader);
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-fish.glb", shader);
+    //Model model("../kenney_cube-pets/Models/GLB format/animal-penguin.glb", shader);
+
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
