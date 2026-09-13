@@ -13,7 +13,7 @@ public:
     Gui(GLFWwindow *w);
 
     void ViewSettings();
-    void GuiModelProperties(const aiScene *scene, double angle);
+    void GuiModelProperties(const aiScene *scene);
 
 public:
     struct ViewSettings mViewSettings;

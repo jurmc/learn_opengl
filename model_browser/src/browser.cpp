@@ -50,7 +50,10 @@ int main(void) {
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
+
+    GLint viewWidth = 800;
+    GLint viewHeight = 600;
+    glViewport(0, 0, viewWidth, viewHeight);
     Shader shader("shaders/default.vs", "shaders/default.fs");
 
     // Car kit
@@ -68,12 +71,9 @@ int main(void) {
     //Model model("../kenney_cube-pets/Models/GLB format/animal-fish.glb", shader);
     //Model model("../kenney_cube-pets/Models/GLB format/animal-penguin.glb", shader);
 
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    double angle;
 
     while (!glfwWindowShouldClose(window)) {
         // Start the Dear ImGui frame
@@ -81,15 +81,20 @@ int main(void) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        angle = 6.0f * glfwGetTime();
         gui.ViewSettings();
-        gui.GuiModelProperties(model.getAiScene(), angle); // TODO: maybe here we,'ll pass const Model instead of aiScene?
-        auto modelTransform = glm::mat4(1.0f);
-        modelTransform = glm::rotate(modelTransform, glm::radians((float)angle), glm::vec3(0.0f, 1.0f, 0.0f));
-        modelTransform = glm::rotate(modelTransform, glm::radians(25.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        shader.setMat4("model", modelTransform);
+        gui.GuiModelProperties(model.getAiScene()); // TODO: maybe here we,'ll pass const Model instead of aiScene?
 
-        // Rendering
+        auto modelTransform = glm::mat4(1.0f);
+        modelTransform = glm::rotate(modelTransform, gui.mViewSettings.mRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        modelTransform = glm::rotate(modelTransform, gui.mViewSettings.mRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        modelTransform = glm::rotate(modelTransform, gui.mViewSettings.mRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.setMat4("model", modelTransform);
+        auto viewTransform = glm::mat4(1.0f);
+        viewTransform = glm::translate(viewTransform, gui.mViewSettings.mCameraPos);
+        shader.setMat4("view", viewTransform);
+        auto projectionTransform = glm::perspective(gui.mViewSettings.mFov, (float)viewWidth / (float)viewHeight, 0.1f, 100.0f);
+        shader.setMat4("projection", projectionTransform);
+
         ImGui::Render();
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

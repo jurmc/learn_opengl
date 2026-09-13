@@ -1,7 +1,7 @@
 #version 330 core
 
 in vec2 vUvCoords;
-in float vDist;
+in float vLightDist;
 
 out vec4 FragColor;
 
@@ -11,5 +11,5 @@ uniform float lightStrength;
 
 void main() {
     vec4 t  = texture(ourTexture, vUvCoords);
-    FragColor = vec4(t.x, t.y, t.z, 1.0f) * lightColor * lightStrength * vDist;
+    FragColor = vec4(t.x, t.y, t.z, 1.0f) * lightColor * lightStrength * vLightDist;
 }

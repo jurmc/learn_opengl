@@ -52,10 +52,42 @@ void Gui::ViewSettings() {
         ImGui::TreePop();
     }
 
+    if (ImGui::TreeNode("Camera")) {
+        float deg = glm::degrees(mViewSettings.mFov);
+        if (ImGui::SliderFloat("FOV", &deg, 0.0f, 180.0f)) {
+            mViewSettings.mFov = glm::radians(deg);
+        }
+        if (ImGui::TreeNode("Rotation")) {
+            deg = glm::degrees(mViewSettings.mRotation.x);
+            if (ImGui::SliderFloat("Around X", &deg, 0.0f, 360.0f)) {
+                mViewSettings.mRotation.x = glm::radians(deg);
+            }
+            deg = glm::degrees(mViewSettings.mRotation.y);
+            if (ImGui::SliderFloat("Around Y", &deg, 0.0f, 360.0f)) {
+                mViewSettings.mRotation.y = glm::radians(deg);
+            }
+            deg = glm::degrees(mViewSettings.mRotation.z);
+            if (ImGui::SliderFloat("Around Z", &deg, 0.0f, 360.0f)) {
+                mViewSettings.mRotation.z = glm::radians(deg);
+            }
+
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Position")) {
+            ImGui::SliderFloat("X", &mViewSettings.mCameraPos.x, -10.f, 10.0f);
+            ImGui::SliderFloat("Y", &mViewSettings.mCameraPos.y, -10.f, 10.0f);
+            ImGui::SliderFloat("Z", &mViewSettings.mCameraPos.z, -10.f, 10.0f);
+
+            ImGui::TreePop();
+        }
+
+        ImGui::TreePop();
+    }
+
     ImGui::End();
 }
 
-void Gui::GuiModelProperties(const aiScene *scene, double angle) {
+void Gui::GuiModelProperties(const aiScene *scene) {
 
     ImGui::Begin("Model properties");
 
@@ -66,7 +98,6 @@ void Gui::GuiModelProperties(const aiScene *scene, double angle) {
         ImGui::Text("mesh[%zu] numFaces: %d", i, scene->mMeshes[i]->mNumFaces);
     }
 
-    ImGui::Text("Angle %.1f", angle);
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / mIo->Framerate, mIo->Framerate);
     ImGui::End();
 }
