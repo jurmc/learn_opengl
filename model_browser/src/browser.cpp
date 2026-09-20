@@ -83,7 +83,8 @@ int main(void) {
 
         gui.ViewSettings();
         gui.GuiModelProperties(model.getAiScene()); // TODO: maybe here we,'ll pass const Model instead of aiScene?
-
+                                                    //
+        gui.mViewSettings.mRotation.y = glfwGetTime();
         auto modelTransform = glm::mat4(1.0f);
         modelTransform = glm::rotate(modelTransform, gui.mViewSettings.mRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
         modelTransform = glm::rotate(modelTransform, gui.mViewSettings.mRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
