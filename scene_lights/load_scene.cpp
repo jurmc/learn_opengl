@@ -50,6 +50,8 @@ int main() {
     float a = 0.0f;
     float r = 8.0f;
 
+    glEnable(GL_DEPTH_TEST);
+
     while (!glfwWindowShouldClose(window)) {
         a = 0.5f * glfwGetTime();
         camera.pos.x = r * glm::cos(a);
@@ -67,10 +69,15 @@ int main() {
 
         shader.use();
         for (auto &[name, meshInstance]: model.meshInstances) {
-            uint32_t meshIdx = meshInstance.idx;
             shader.setMat4("model", meshInstance.transform);
-            glBindVertexArray(model.meshes[meshIdx].vao);
-            glDrawElements(GL_TRIANGLES, model.meshes[meshIdx].indices.size(), GL_UNSIGNED_INT, 0);
+
+            uint32_t meshIdx = meshInstance.idx;
+            const Mesh &mesh = model.meshes[meshIdx];
+            const Material &material = model.materials[mesh.materialIdx];
+
+            shader.setVec4("diffuseCol", material.diffuse);
+            glBindVertexArray(mesh.vao);
+            glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
         }
         glfwSwapBuffers(window);
     }

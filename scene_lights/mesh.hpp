@@ -1,5 +1,7 @@
 #pragma once
 
+#include "material.hpp"
+
 #include <glm/glm.hpp>
 
 #include <vector>
@@ -10,6 +12,7 @@ struct Mesh {
     const std::string name;
     std::vector<float> vertices;
     std::vector<uint32_t> indices;
+    uint32_t materialIdx;
     uint32_t vao;
 };
 

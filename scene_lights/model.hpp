@@ -1,5 +1,7 @@
 #pragma once 
+
 #include "mesh.hpp"
+#include "material.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -13,6 +15,7 @@ struct Model {
     void traverseScene(const aiNode *node, aiMatrix4x4 parentTransform);
 
     std::vector<Mesh> meshes;
+    std::vector<Material> materials;
     std::map<std::string, MeshInstance> meshInstances;
 };
 

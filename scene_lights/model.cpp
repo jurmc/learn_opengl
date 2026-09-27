@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include "material.hpp"
 
 #include "glad/glad.h"
 
@@ -7,9 +8,11 @@
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <print>
 
 Model::Model(const char *fileName) :
     meshes(),
+    materials(),
     meshInstances()
 {
     Assimp::Importer importer;
@@ -20,8 +23,28 @@ Model::Model(const char *fileName) :
             | aiProcess_JoinIdenticalVertices
             | aiProcess_SortByPType);
 
-    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+    std::println("--materials");
+    for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+        aiMaterial *m = scene->mMaterials[i];
+        std::println("mat: {}", i);
+        std::println("numProp: {}", m->mNumProperties); 
+        aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
+        if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
+            std::println("cannto obtain diffuse color");
+        }
+
+        Material material{
+            glm::vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a),
+        };
+        materials.push_back(material);
+    }
+    std::println("---------");
+
+    for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
         auto mesh = scene->mMeshes[i];
+
+        std::println("mesh: {}", mesh->mName.C_Str());
+        std::println("mat idx: {}", mesh->mMaterialIndex);
 
         std::string meshName(mesh->mName.C_Str());
         std::vector<float> vertices;
@@ -59,9 +82,10 @@ Model::Model(const char *fileName) :
 
         Mesh newMesh{
             mesh->mName.C_Str(),
-                std::move(vertices),
-                std::move(indices),
-                VAO,
+            std::move(vertices),
+            std::move(indices),
+            mesh->mMaterialIndex, 
+            VAO,
         };
 
         meshes.push_back(std::move(newMesh));
