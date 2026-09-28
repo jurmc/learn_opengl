@@ -30,13 +30,16 @@ Model::Model(const char *fileName) :
         std::println("numProp: {}", m->mNumProperties); 
         aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
         if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
-            std::println("cannto obtain diffuse color");
+            std::println("can't obtain diffuse color");
         }
 
         Material material{
             glm::vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a),
         };
         materials.push_back(material);
+
+        // Maybe there are textures
+        std::println("has diffuse textures: {}", m->GetTextureCount(aiTextureType_DIFFUSE ));
     }
     std::println("---------");
 
