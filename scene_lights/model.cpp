@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <print>
+#include <stb/stb_image.h>
 
 Model::Model(const char *fileName) :
     meshes(),
@@ -28,18 +29,56 @@ Model::Model(const char *fileName) :
         aiMaterial *m = scene->mMaterials[i];
         std::println("mat: {}", i);
         std::println("numProp: {}", m->mNumProperties); 
-        aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
-        if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
-            std::println("can't obtain diffuse color");
+
+        // Textrue (if exist) has precedence
+        if (m->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+            aiString texturePath;
+            if (aiReturn_FAILURE == m->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath)) {
+                std::println(stderr, "Cannot get texture path");
+                std::exit(1);
+            }
+
+            /////
+            unsigned int textureId;
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            std::println("texture path: {}", texturePath.C_Str());
+            int w, h, n;
+            unsigned char *texData = stbi_load(texturePath.C_Str(), &w, &h, &n, 3);
+
+            if (texData) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
+                glGenerateMipmap(GL_TEXTURE_2D);
+            } else {
+                std::println(stderr, "Cannot load image");
+            }
+            stbi_image_free(texData);
+            /////
+
+            stbi_image_free(texData);
+            Material material{
+                MaterialType::Texture,
+                glm::vec4(0.1f, 0.1f, 0.1f, 0.1f),
+                textureId,
+            };
+            materials.push_back(material);
+        } else {
+            aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
+            if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
+                std::println("can't obtain diffuse color");
+            }
+            Material material{
+                MaterialType::Color,
+                glm::vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a),
+                0,
+            };
+            materials.push_back(material);
         }
-
-        Material material{
-            glm::vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a),
-        };
-        materials.push_back(material);
-
-        // Maybe there are textures
-        std::println("has diffuse textures: {}", m->GetTextureCount(aiTextureType_DIFFUSE ));
     }
     std::println("---------");
 

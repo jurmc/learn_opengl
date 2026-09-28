@@ -1,2 +1,2 @@
-Load materials and UV Mapping, and Textrue from file
-Use materials and textures during rendering phase
+- UV vertex mapping not yet imported (after importing vertex data with UV should be send to GPU)
+- Render textures for objects that have them

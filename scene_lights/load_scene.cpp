@@ -43,7 +43,7 @@ int main() {
     int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     std::println("version: {}", version);
 
-    Shader shader("default.vs", "default.fs");
+    Shader shaderDiffuseColor("default.vs", "default.fs");
     Model model("scene.glb");
 
     Camera camera;
@@ -64,18 +64,23 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.setMat4("view", camera.getView());
-        shader.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderDiffuseColor.setMat4("view", camera.getView());
+        shaderDiffuseColor.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
 
-        shader.use();
         for (auto &[name, meshInstance]: model.meshInstances) {
-            shader.setMat4("model", meshInstance.transform);
+            shaderDiffuseColor.setMat4("model", meshInstance.transform);
 
             uint32_t meshIdx = meshInstance.idx;
             const Mesh &mesh = model.meshes[meshIdx];
             const Material &material = model.materials[mesh.materialIdx];
+            if (material.type == MaterialType::Texture) {
+                shaderDiffuseColor.use();
+                shaderDiffuseColor.setVec4("diffuseCol", glm::vec4{0.3f, 0.0f, 0.0f, 0.0f});
+            } else {
+                shaderDiffuseColor.use();
+                shaderDiffuseColor.setVec4("diffuseCol", material.diffuse);
+            }
 
-            shader.setVec4("diffuseCol", material.diffuse);
             glBindVertexArray(mesh.vao);
             glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
         }
