@@ -10,9 +10,15 @@
 
 struct Mesh {
     const std::string name;
+
     std::vector<float> vertices;
     std::vector<uint32_t> indices;
+
     uint32_t materialIdx;
+
+    bool hasTexture = false;
+    uint32_t textureId;
+
     uint32_t vao;
 };
 
