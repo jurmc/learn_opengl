@@ -1,2 +1,1 @@
-- UV vertex mapping not yet imported (after importing vertex data with UV should be send to GPU)
-- Render textures for objects that have them
+- Render textures for objects that have them (we need separte shader for that, then set texutre id before glDraw command)
