@@ -11,6 +11,81 @@
 #include <print>
 #include <stb/stb_image.h>
 
+Mesh createUntexturedMesh(const char* meshName,
+        std::vector<VertexUntextured>& vertices,
+        std::vector<unsigned int>& indices,
+        unsigned int matIdx) {
+
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexUntextured), vertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexUntextured), (void*)offsetof(VertexUntextured, position));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexUntextured), (void*)offsetof(VertexUntextured, normal));
+    glEnableVertexAttribArray(1);
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    Mesh m{
+        meshName,
+        indices.size(),
+        matIdx, 
+        false,
+        VAO,
+    };
+
+    return m;
+}
+
+Mesh createTexturedMesh(const char* meshName,
+        std::vector<VertexTextured>& vertices,
+        std::vector<unsigned int>& indices,
+        unsigned int matIdx) {
+
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexTextured), vertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, position));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, normal));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, texCoords));
+    glEnableVertexAttribArray(2);
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    Mesh m{
+        meshName,
+        indices.size(),
+        matIdx, 
+        true,
+        VAO,
+    };
+
+    return m;
+}
+
 Model::Model(const char *fileName) :
     meshes(),
     materials(),
@@ -23,6 +98,8 @@ Model::Model(const char *fileName) :
             | aiProcess_Triangulate
             | aiProcess_JoinIdenticalVertices
             | aiProcess_SortByPType);
+
+    // load material, TODO: maybe this can be extracted?
 
     std::println("--materials");
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
@@ -80,57 +157,62 @@ Model::Model(const char *fileName) :
             materials.push_back(material);
         }
     }
-    std::println("---------");
 
     for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
         auto mesh = scene->mMeshes[i];
 
-        std::println("mesh: {}", mesh->mName.C_Str());
-        std::println("mat idx: {}", mesh->mMaterialIndex);
+        if (MaterialType::Texture == materials[mesh->mMaterialIndex].type) {
 
-        std::string meshName(mesh->mName.C_Str());
-        std::vector<float> vertices;
-        for (uint32_t j = 0; j < mesh->mNumVertices; ++j) {
-            aiVector3D v = mesh->mVertices[j];
-            vertices.push_back(v.x);
-            vertices.push_back(v.y);
-            vertices.push_back(v.z);
+            std::vector<VertexTextured> vertices;
+            for (uint32_t j = 0; j < mesh->mNumVertices; ++j) {
+                aiVector3D v = mesh->mVertices[j];
+                aiVector3D n = mesh->mNormals[j];
+                aiVector3D uv = mesh->mTextureCoords[0][j];
+                vertices.push_back(VertexTextured{
+                        glm::vec3(v.x, v.y, v.z),
+                        glm::vec3(n.x, n.y, n.z),
+                        glm::vec2(uv.x, uv.y),
+                        });
+            }
+            std::vector<uint32_t> indices;
+            for (unsigned int j = 0; j < mesh->mNumFaces; ++j) {
+                aiFace f = mesh->mFaces[j];
+                assert(3 == f.mNumIndices);
+                indices.push_back(f.mIndices[0]);
+                indices.push_back(f.mIndices[1]);
+                indices.push_back(f.mIndices[2]);
+
+            }
+
+            Mesh m = createTexturedMesh(mesh->mName.C_Str(),
+                    vertices, indices,
+                    mesh->mMaterialIndex);
+            meshes.push_back(std::move(m));
+        } else {
+            std::vector<VertexUntextured> vertices;
+            for (uint32_t j = 0; j < mesh->mNumVertices; ++j) {
+                aiVector3D v = mesh->mVertices[j];
+                aiVector3D n = mesh->mNormals[j];
+                vertices.push_back(VertexUntextured{
+                        glm::vec3(v.x, v.y, v.z),
+                        glm::vec3(n.x, n.y, n.z),
+                        });
+            }
+            std::vector<uint32_t> indices;
+            for (unsigned int j = 0; j < mesh->mNumFaces; ++j) {
+                aiFace f = mesh->mFaces[j];
+                assert(3 == f.mNumIndices);
+                indices.push_back(f.mIndices[0]);
+                indices.push_back(f.mIndices[1]);
+                indices.push_back(f.mIndices[2]);
+
+            }
+
+            Mesh m = createUntexturedMesh(mesh->mName.C_Str(),
+                    vertices, indices,
+                    mesh->mMaterialIndex);
+            meshes.push_back(std::move(m));
         }
-        std::vector<uint32_t> indices;
-        for (unsigned int j = 0; j < mesh->mNumFaces; ++j) {
-            aiFace f = mesh->mFaces[j];
-            assert(3 == f.mNumIndices);
-            indices.push_back(f.mIndices[0]);
-            indices.push_back(f.mIndices[1]);
-            indices.push_back(f.mIndices[2]);
-        }
-
-        unsigned int VAO;
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-
-        unsigned int VBO;
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        unsigned int EBO;
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(float) * indices.size(), indices.data(), GL_STATIC_DRAW);
-
-        Mesh newMesh{
-            mesh->mName.C_Str(),
-            std::move(vertices),
-            std::move(indices),
-            mesh->mMaterialIndex, 
-            VAO,
-        };
-
-        meshes.push_back(std::move(newMesh));
     }
 
     aiMatrix4x4 identity;

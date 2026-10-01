@@ -82,7 +82,7 @@ int main() {
             }
 
             glBindVertexArray(mesh.vao);
-            glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, mesh.indexCnt, GL_UNSIGNED_INT, 0);
         }
         glfwSwapBuffers(window);
     }
