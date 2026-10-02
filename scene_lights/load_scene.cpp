@@ -43,7 +43,8 @@ int main() {
     int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     std::println("version: {}", version);
 
-    Shader shaderDiffuseColor("default.vs", "default.fs");
+    Shader shaderDiffuseColor("shaders/default.vs", "shaders/diffuseColor.fs");
+    Shader shaderTexture("shaders/default.vs", "shaders/texture.fs");
     Model model("scene.glb");
 
     Camera camera;
@@ -51,6 +52,7 @@ int main() {
     float r = 8.0f;
 
     glEnable(GL_DEPTH_TEST);
+
 
     while (!glfwWindowShouldClose(window)) {
         a = 0.5f * glfwGetTime();
@@ -64,20 +66,28 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        shaderTexture.use();
+        shaderTexture.setMat4("view", camera.getView());
+        shaderTexture.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderDiffuseColor.use();
         shaderDiffuseColor.setMat4("view", camera.getView());
         shaderDiffuseColor.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
 
         for (auto &[name, meshInstance]: model.meshInstances) {
-            shaderDiffuseColor.setMat4("model", meshInstance.transform);
-
             uint32_t meshIdx = meshInstance.idx;
             const Mesh &mesh = model.meshes[meshIdx];
             const Material &material = model.materials[mesh.materialIdx];
             if (material.type == MaterialType::Texture) {
-                shaderDiffuseColor.use();
-                shaderDiffuseColor.setVec4("diffuseCol", glm::vec4{0.3f, 0.0f, 0.0f, 0.0f});
+                shaderTexture.use();
+                shaderTexture.setMat4("model", meshInstance.transform);
+                shaderTexture.setVec4("diffuseCol", glm::vec4{0.3f, 0.3f, 0.3f, 1.0f});
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, material.textureId);
+                shaderTexture.setInt("textureId", 0);
             } else {
                 shaderDiffuseColor.use();
+                shaderDiffuseColor.setMat4("model", meshInstance.transform);
                 shaderDiffuseColor.setVec4("diffuseCol", material.diffuse);
             }
 

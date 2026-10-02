@@ -67,7 +67,7 @@ Mesh createTexturedMesh(const char* meshName,
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, normal));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, texCoords));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexTextured), (void*)offsetof(VertexTextured, texCoords));
     glEnableVertexAttribArray(2);
 
     unsigned int EBO;
@@ -114,36 +114,46 @@ Model::Model(const char *fileName) :
                 std::println(stderr, "Cannot get texture path");
                 std::exit(1);
             }
+            const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(texturePath.C_Str());
+            if (embeddedTexture) {
+                std::println("this is embedded texture");
 
-            /////
-            unsigned int textureId;
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_2D, textureId);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                int w, h, n;
+                //unsigned char *texData = stbi_load_from_memory(
+                //        reinterpret_cast<const stbi_uc*>(embeddedTexture->pcData),
+                //        embeddedTexture->mWidth,
+                //        &w, &h, &n, 3);
+                unsigned char *texData = stbi_load("checkered.png", &w, &h, &n, 3);
+                if (!texData) {
+                    std::println("sth wrong with stbi_load");
+                }
 
-            std::println("texture path: {}", texturePath.C_Str());
-            int w, h, n;
-            unsigned char *texData = stbi_load(texturePath.C_Str(), &w, &h, &n, 3);
+                /////
+                unsigned int textureId;
+                glGenTextures(1, &textureId);
+                glBindTexture(GL_TEXTURE_2D, textureId);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            if (texData) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
-                glGenerateMipmap(GL_TEXTURE_2D);
-            } else {
-                std::println(stderr, "Cannot load image");
+                if (texData) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
+                    glGenerateMipmap(GL_TEXTURE_2D);
+                } else {
+                    std::println(stderr, "Cannot load image");
+                }
+                stbi_image_free(texData);
+
+                Material material{
+                    MaterialType::Texture,
+                        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f),
+                        textureId,
+                };
+                std::println("tex id: {}", material.textureId);
+                materials.push_back(material);
             }
-            stbi_image_free(texData);
             /////
-
-            stbi_image_free(texData);
-            Material material{
-                MaterialType::Texture,
-                glm::vec4(0.1f, 0.1f, 0.1f, 0.1f),
-                textureId,
-            };
-            materials.push_back(material);
         } else {
             aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
             if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
