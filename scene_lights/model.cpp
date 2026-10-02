@@ -116,19 +116,7 @@ Model::Model(const char *fileName) :
             }
             const aiTexture* embeddedTexture = scene->GetEmbeddedTexture(texturePath.C_Str());
             if (embeddedTexture) {
-                std::println("this is embedded texture");
 
-                int w, h, n;
-                //unsigned char *texData = stbi_load_from_memory(
-                //        reinterpret_cast<const stbi_uc*>(embeddedTexture->pcData),
-                //        embeddedTexture->mWidth,
-                //        &w, &h, &n, 3);
-                unsigned char *texData = stbi_load("checkered.png", &w, &h, &n, 3);
-                if (!texData) {
-                    std::println("sth wrong with stbi_load");
-                }
-
-                /////
                 unsigned int textureId;
                 glGenTextures(1, &textureId);
                 glBindTexture(GL_TEXTURE_2D, textureId);
@@ -137,11 +125,18 @@ Model::Model(const char *fileName) :
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+                int w, h, n;
+                unsigned char *texData = stbi_load_from_memory(
+                        reinterpret_cast<const stbi_uc*>(embeddedTexture->pcData),
+                        embeddedTexture->mWidth,
+                        &w, &h, &n, 3);
+
                 if (texData) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
                     glGenerateMipmap(GL_TEXTURE_2D);
                 } else {
                     std::println(stderr, "Cannot load image");
+                    std::exit(1);
                 }
                 stbi_image_free(texData);
 
@@ -150,14 +145,16 @@ Model::Model(const char *fileName) :
                         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f),
                         textureId,
                 };
-                std::println("tex id: {}", material.textureId);
                 materials.push_back(material);
+            } else {
+                std::println(stderr, "cannot load image");
+                std::exit(1);
             }
-            /////
         } else {
             aiColor4D diffuse(0.0f, 0.0f, 0.0f, 1.0f);
             if (AI_SUCCESS != m->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
-                std::println("can't obtain diffuse color");
+                std::println(stderr, "can't obtain diffuse color");
+                std::exit(1);
             }
             Material material{
                 MaterialType::Color,

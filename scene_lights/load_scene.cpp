@@ -81,7 +81,6 @@ int main() {
                 shaderTexture.use();
                 shaderTexture.setMat4("model", meshInstance.transform);
                 shaderTexture.setVec4("diffuseCol", glm::vec4{0.3f, 0.3f, 0.3f, 1.0f});
-
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material.textureId);
                 shaderTexture.setInt("textureId", 0);
