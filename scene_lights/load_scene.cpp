@@ -31,6 +31,7 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 int main() {
     int w = 800;
     int h = 600;
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -45,14 +46,18 @@ int main() {
 
     Shader shaderDiffuseColor("shaders/default.vs", "shaders/diffuseColor.fs");
     Shader shaderTexture("shaders/default.vs", "shaders/texture.fs");
+    Shader shaderLightSource("shaders/lightSource.vs", "shaders/lightSource.fs");
     Model model("scene.glb");
+    if (false == model.lightSource.initialized) {
+        std::println(stderr, "light source mesh not found");
+        std::exit(1);
+    }
 
     Camera camera;
     float a = 0.0f;
     float r = 8.0f;
 
     glEnable(GL_DEPTH_TEST);
-
 
     while (!glfwWindowShouldClose(window)) {
         a = 0.5f * glfwGetTime();
@@ -72,7 +77,11 @@ int main() {
         shaderDiffuseColor.use();
         shaderDiffuseColor.setMat4("view", camera.getView());
         shaderDiffuseColor.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderLightSource.use();
+        shaderLightSource.setMat4("view", camera.getView());
+        shaderLightSource.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
 
+        // Scene objects
         for (auto &[name, meshInstance]: model.meshInstances) {
             uint32_t meshIdx = meshInstance.idx;
             const Mesh &mesh = model.meshes[meshIdx];
@@ -93,6 +102,13 @@ int main() {
             glBindVertexArray(mesh.vao);
             glDrawElements(GL_TRIANGLES, mesh.indexCnt, GL_UNSIGNED_INT, 0);
         }
+
+        // Light source
+        shaderLightSource.use();
+        shaderLightSource.setMat4("model", model.lightSource.transform);
+        glBindVertexArray(model.lightSource.vao);
+        glDrawElements(GL_TRIANGLES, model.lightSource.indexCnt, GL_UNSIGNED_INT, 0);
+
         glfwSwapBuffers(window);
     }
 

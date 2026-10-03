@@ -24,7 +24,7 @@ struct Mesh {
     size_t indexCnt;
     uint32_t materialIdx;
     bool hasTexture = false;
-    //uint32_t textureId;
+    //uint32_t textureId;  // TODO: do we need this? if there are more texture then most likely we'll need this field
     uint32_t vao;
 };
 

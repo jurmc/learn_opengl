@@ -100,8 +100,6 @@ Model::Model(const char *fileName) :
             | aiProcess_SortByPType);
 
     // load material, TODO: maybe this can be extracted?
-
-    std::println("--materials");
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         aiMaterial *m = scene->mMaterials[i];
         std::println("mat: {}", i);
@@ -167,6 +165,7 @@ Model::Model(const char *fileName) :
 
     for (uint32_t i = 0; i < scene->mNumMeshes; ++i) {
         auto mesh = scene->mMeshes[i];
+        std::string name(mesh->mName.C_Str());
 
         if (MaterialType::Texture == materials[mesh->mMaterialIndex].type) {
 
@@ -218,6 +217,18 @@ Model::Model(const char *fileName) :
             Mesh m = createUntexturedMesh(mesh->mName.C_Str(),
                     vertices, indices,
                     mesh->mMaterialIndex);
+            if ("Sphere" == name) {
+                std::println("got sphere mesh");
+                lightSource.vao = m.vao;
+                lightSource.indexCnt = m.indexCnt;
+                lightSource.position = glm::vec3(0.8f, 0.8f, 0.8f); // TODO: get it from assimp model
+                glm::mat4 lightModel = glm::mat4(1.0f);
+                lightModel = glm::translate(lightModel, lightSource.position);
+                auto SCALE = 0.25f;
+                lightModel = glm::scale(lightModel, glm::vec3(SCALE));
+                lightSource.transform = lightModel;
+                lightSource.initialized = true;
+            }
             meshes.push_back(std::move(m));
         }
     }
@@ -228,7 +239,6 @@ Model::Model(const char *fileName) :
 
 void Model::traverseScene(const aiNode *node, aiMatrix4x4 parentTransform) {
     std::string name = node->mName.C_Str();
-
     aiMatrix4x4 transform = node->mTransformation;
 
     aiMatrix4x4 accTransform = parentTransform;

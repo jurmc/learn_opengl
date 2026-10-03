@@ -8,6 +8,15 @@
 #include <assimp/postprocess.h>
 #include <map>
 #include <vector>
+#include <cstdint>
+
+typedef struct LightSource {
+    bool initialized = false;
+    uint32_t vao;
+    size_t indexCnt;
+    glm::vec3 position;
+    glm::mat4 transform;
+} LightSource;
 
 struct Model {
     Model(const char *fileName);
@@ -17,5 +26,7 @@ struct Model {
     std::vector<Mesh> meshes;
     std::vector<Material> materials;
     std::map<std::string, MeshInstance> meshInstances;
+
+    LightSource lightSource;
 };
 
