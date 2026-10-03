@@ -1,1 +1,2 @@
-- Render textures for objects that have them (we need separte shader for that, then set texutre id before glDraw command)
+- Add Imgui, start with configuring light source color
+- In imgui configure ambinet color, and its' factor for shaders rendering objects on scene
