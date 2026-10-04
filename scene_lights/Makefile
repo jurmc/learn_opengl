@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I ../deps/usr/local/include
+CXXFLAGS = -ggdb -std=c++23 -Wall -Wextra -MMD -MP -I imgui/ -I imgui/backends -I ../deps/usr/local/include
 LDFLAGS = -L ../deps/usr/local/lib
 
 LIBS = -l:glad.a -lglfw -lGL -lassimp
@@ -13,12 +13,20 @@ SRCS   := $(wildcard $(SRC_DIR)/*.cpp)
 OBJS   := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS := $(OBJS:.o=.d)
 
+IMGUI_SOURCES := imgui.cpp \
+	imgui_tables.cpp \
+	imgui_draw.cpp \
+	imgui_widgets.cpp \
+	imgui_impl_glfw.cpp \
+	imgui_impl_opengl3.cpp
+IMGUI_OBJECTS = $(patsubst %.cpp, imgui-build/%.o, $(IMGUI_SOURCES))
+
 .PHONY: all clean
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS) | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $@
+$(TARGET): $(OBJS) $(IMGUI_OBJECTS) | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(IMGUI_OBJECTS) $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@

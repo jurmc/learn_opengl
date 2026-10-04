@@ -1,6 +1,9 @@
 #include "camera.hpp"
 #include "shader.hpp"
 #include "model.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 #include "glad/glad.h"
 
@@ -29,6 +32,7 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 }
 
 int main() {
+
     int w = 800;
     int h = 600;
 
@@ -40,6 +44,15 @@ int main() {
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, key_callback);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 
     int version = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     std::println("version: {}", version);
@@ -60,6 +73,13 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window)) {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Light scene for Learn OpenGL");
+        ImGui::End();
+
         a = 0.5f * glfwGetTime();
         camera.pos.x = r * glm::cos(a);
         camera.pos.z = r * glm::sin(a);
@@ -109,8 +129,14 @@ int main() {
         glBindVertexArray(model.lightSource.vao);
         glDrawElements(GL_TRIANGLES, model.lightSource.indexCnt, GL_UNSIGNED_INT, 0);
 
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate();
 }
