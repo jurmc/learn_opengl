@@ -1,10 +1,11 @@
 #include "camera.hpp"
 #include "shader.hpp"
 #include "model.hpp"
+#include "config.hpp"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
 #include "glad/glad.h"
 
 #include <glm/ext.hpp>
@@ -19,19 +20,17 @@
 #include <cstdint>
 #include <utility>
 
-void dumpAiMatrix(const aiMatrix4x4 &m) {
-    std::println("{}, {}, {}, {}", m.a1, m.a2, m.a3, m.a4);
-    std::println("{}, {}, {}, {}", m.b1, m.b2, m.b3, m.b4);
-    std::println("{}, {}, {}, {}", m.c1, m.c2, m.c3, m.c4);
-    std::println("{}, {}, {}, {}", m.d1, m.d2, m.d3, m.d4);
-}
-
 void key_callback(GLFWwindow* window, int key, int, int action, int) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
 int main() {
+    SceneConfig config {
+        .lightSource = {
+            .color = glm::vec4(1.0f)
+        },
+    }; // Maybe we need construcor?
 
     int w = 800;
     int h = 600;
@@ -60,8 +59,8 @@ int main() {
     Shader shaderDiffuseColor("shaders/default.vs", "shaders/diffuseColor.fs");
     Shader shaderTexture("shaders/default.vs", "shaders/texture.fs");
     Shader shaderLightSource("shaders/lightSource.vs", "shaders/lightSource.fs");
-    Model model("scene.glb");
-    if (false == model.lightSource.initialized) {
+    Model model("scene.glb", config);
+    if (false == config.lightSource.initialized) {
         std::println(stderr, "light source mesh not found");
         std::exit(1);
     }
@@ -78,6 +77,13 @@ int main() {
         ImGui::NewFrame();
 
         ImGui::Begin("Light scene for Learn OpenGL");
+        auto lsCol = &config.lightSource.color;
+        float color[3] = {lsCol->x, lsCol->y, lsCol->z};
+        if (ImGui::ColorEdit3("clear color", (float*)&color)) {
+            lsCol->x = color[0];
+            lsCol->y = color[1];
+            lsCol->z = color[2];
+        }
         ImGui::End();
 
         a = 0.5f * glfwGetTime();
@@ -108,15 +114,21 @@ int main() {
             const Material &material = model.materials[mesh.materialIdx];
             if (material.type == MaterialType::Texture) {
                 shaderTexture.use();
+                shaderTexture.setFloat("ambientColComponent", 0.2f);
                 shaderTexture.setMat4("model", meshInstance.transform);
-                shaderTexture.setVec4("diffuseCol", glm::vec4{0.3f, 0.3f, 0.3f, 1.0f});
+                shaderTexture.setFloat("diffuseColComponent", 0.8f);
+                shaderTexture.setVec4("lightSourceColor", config.lightSource.color);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material.textureId);
                 shaderTexture.setInt("textureId", 0);
             } else {
                 shaderDiffuseColor.use();
+                shaderDiffuseColor.setFloat("ambientColComponent", 0.2f);
+                shaderDiffuseColor.setVec4("ambientCol", material.diffuse);
                 shaderDiffuseColor.setMat4("model", meshInstance.transform);
+                shaderDiffuseColor.setFloat("diffuseColComponent", 0.8f);
                 shaderDiffuseColor.setVec4("diffuseCol", material.diffuse);
+                shaderDiffuseColor.setVec4("lightSourceColor", config.lightSource.color);
             }
 
             glBindVertexArray(mesh.vao);
@@ -125,9 +137,9 @@ int main() {
 
         // Light source
         shaderLightSource.use();
-        shaderLightSource.setMat4("model", model.lightSource.transform);
-        glBindVertexArray(model.lightSource.vao);
-        glDrawElements(GL_TRIANGLES, model.lightSource.indexCnt, GL_UNSIGNED_INT, 0);
+        shaderLightSource.setMat4("model", config.lightSource.transform);
+        glBindVertexArray(config.lightSource.vao);
+        glDrawElements(GL_TRIANGLES, config.lightSource.indexCnt, GL_UNSIGNED_INT, 0);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

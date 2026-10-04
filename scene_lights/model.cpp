@@ -86,7 +86,8 @@ Mesh createTexturedMesh(const char* meshName,
     return m;
 }
 
-Model::Model(const char *fileName) :
+Model::Model(const char *fileName, SceneConfig& config) :
+    config(config),
     meshes(),
     materials(),
     meshInstances()
@@ -219,15 +220,15 @@ Model::Model(const char *fileName) :
                     mesh->mMaterialIndex);
             if ("Sphere" == name) {
                 std::println("got sphere mesh");
-                lightSource.vao = m.vao;
-                lightSource.indexCnt = m.indexCnt;
-                lightSource.position = glm::vec3(0.8f, 0.8f, 0.8f); // TODO: get it from assimp model
+                config.lightSource.vao = m.vao;
+                config.lightSource.indexCnt = m.indexCnt;
+                config.lightSource.position = glm::vec3(0.8f, 0.8f, 0.8f); // TODO: get it from assimp model
                 glm::mat4 lightModel = glm::mat4(1.0f);
-                lightModel = glm::translate(lightModel, lightSource.position);
+                lightModel = glm::translate(lightModel, config.lightSource.position);
                 auto SCALE = 0.25f;
                 lightModel = glm::scale(lightModel, glm::vec3(SCALE));
-                lightSource.transform = lightModel;
-                lightSource.initialized = true;
+                config.lightSource.transform = lightModel;
+                config.lightSource.initialized = true;
             }
             meshes.push_back(std::move(m));
         }

@@ -1,2 +1,2 @@
-- Add Imgui, start with configuring light source color
-- In imgui configure ambinet color, and its' factor for shaders rendering objects on scene
+- Add factors for ambiend and diffuse colors to GUI
+- Add suport for real diffuse component computation (so distance between face and light source is taken into consideration)
