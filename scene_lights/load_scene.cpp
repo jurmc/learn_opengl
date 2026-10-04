@@ -79,10 +79,22 @@ int main() {
         ImGui::Begin("Light scene for Learn OpenGL");
         auto lsCol = &config.lightSource.color;
         float color[3] = {lsCol->x, lsCol->y, lsCol->z};
-        if (ImGui::ColorEdit3("clear color", (float*)&color)) {
+        if (ImGui::ColorEdit3("Light color", (float*)&color)) {
             lsCol->x = color[0];
             lsCol->y = color[1];
             lsCol->z = color[2];
+        }
+        auto lsPos = &config.lightSource.position;
+        float pos[3]{lsPos->x, lsPos->y, lsPos->z};
+        if (ImGui::InputFloat3("Camera pos", pos)) {
+            lsPos->x = pos[0];
+            lsPos->y = pos[1];
+            lsPos->z = pos[2];
+            glm::mat4 lightModel = glm::mat4(1.0f); // TODO: duplicated code
+            lightModel = glm::translate(lightModel, config.lightSource.position);
+            auto SCALE = 0.25f;
+            lightModel = glm::scale(lightModel, glm::vec3(SCALE));
+            config.lightSource.transform = lightModel;
         }
         ImGui::End();
 

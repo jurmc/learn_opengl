@@ -223,7 +223,7 @@ Model::Model(const char *fileName, SceneConfig& config) :
                 config.lightSource.vao = m.vao;
                 config.lightSource.indexCnt = m.indexCnt;
                 config.lightSource.position = glm::vec3(0.8f, 0.8f, 0.8f); // TODO: get it from assimp model
-                glm::mat4 lightModel = glm::mat4(1.0f);
+                glm::mat4 lightModel = glm::mat4(1.0f); // TODO: duplicated code
                 lightModel = glm::translate(lightModel, config.lightSource.position);
                 auto SCALE = 0.25f;
                 lightModel = glm::scale(lightModel, glm::vec3(SCALE));
