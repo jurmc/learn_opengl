@@ -8,6 +8,7 @@
 #include "imgui_impl_opengl3.h"
 #include "glad/glad.h"
 
+#include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <GLFW/glfw3.h>
 #include <assimp/Importer.hpp>
@@ -19,6 +20,9 @@
 #include <cassert>
 #include <cstdint>
 #include <utility>
+#include <cmath>
+
+const double PI = glm::pi<double>();
 
 void key_callback(GLFWwindow* window, int key, int, int action, int) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -98,7 +102,8 @@ int main() {
         }
         ImGui::End();
 
-        a = 0.5f * glfwGetTime();
+        auto aa = (0.5f * glfwGetTime());
+        a = PI/4.0f + PI/4.0f * sin(aa);
         camera.pos.x = r * glm::cos(a);
         camera.pos.z = r * glm::sin(a);
         camera.dir.x = -camera.pos.x;
@@ -140,6 +145,7 @@ int main() {
                 shaderDiffuseColor.setMat4("model", meshInstance.transform);
                 shaderDiffuseColor.setFloat("diffuseColComponent", 0.8f);
                 shaderDiffuseColor.setVec4("diffuseCol", material.diffuse);
+                shaderDiffuseColor.setVec3("lightSourceLoc", config.lightSource.position);
                 shaderDiffuseColor.setVec4("lightSourceColor", config.lightSource.color);
             }
 

@@ -1,3 +1,2 @@
-- Add factors for ambiend and diffuse colors to GUI
-- Add suport for real diffuse component computation (so angle between face nomal and light direction is taken into consideration)
-- Rotation of scene should be left to righ up to 180 and than back, so all the time we see front of the scene
+- Add factors for ambient to GUI
+- Add some kind of interactive way to move light source (for example along axes, x/y/z/), using keyboard
