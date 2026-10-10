@@ -1,2 +1,3 @@
+- Support for diffuse and spec light components for textured instances
 - Add factors for ambient to GUI
 - Add some kind of interactive way to move light source (for example along axes, x/y/z/), using keyboard
