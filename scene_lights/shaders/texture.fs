@@ -8,10 +8,10 @@ uniform float ambientColComponent;
 
 uniform sampler2D textureId;
 uniform float diffuseColComponent;
-uniform vec4 lightSourceColor;
+uniform vec3 lightSourceColor;
 
 void main() {
-    vec4 ambient = ambientColComponent * texture(textureId, TexCoord);
-    vec4 diffuse = diffuseColComponent * texture(textureId, TexCoord);
-    FragColor = lightSourceColor * (ambient + diffuse);
+    vec3 ambient = vec3(ambientColComponent * texture(textureId, TexCoord));
+    vec3 diffuse = vec3(diffuseColComponent * texture(textureId, TexCoord));
+    FragColor = vec4(lightSourceColor * (ambient + diffuse), 0.0f);
 }

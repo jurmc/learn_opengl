@@ -61,7 +61,7 @@ int main() {
     std::println("version: {}", version);
 
     Shader shaderDiffuseColor("shaders/default.vs", "shaders/diffuseColor.fs");
-    Shader shaderTexture("shaders/default.vs", "shaders/texture.fs");
+    Shader shaderTexture("shaders/default.vs", "shaders/texture.fs"); // TODO: add diffuse light and specular light
     Shader shaderLightSource("shaders/lightSource.vs", "shaders/lightSource.fs");
     Model model("scene.glb", config);
     if (false == config.lightSource.initialized) {
@@ -134,19 +134,20 @@ int main() {
                 shaderTexture.setFloat("ambientColComponent", 0.2f);
                 shaderTexture.setMat4("model", meshInstance.transform);
                 shaderTexture.setFloat("diffuseColComponent", 0.8f);
-                shaderTexture.setVec4("lightSourceColor", config.lightSource.color);
+                shaderTexture.setVec3("lightSourceColor", config.lightSource.color);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material.textureId);
                 shaderTexture.setInt("textureId", 0);
             } else {
                 shaderDiffuseColor.use();
                 shaderDiffuseColor.setFloat("ambientColComponent", 0.2f);
-                shaderDiffuseColor.setVec4("ambientCol", material.diffuse);
+                shaderDiffuseColor.setVec3("ambientCol", glm::vec3(material.diffuse));
                 shaderDiffuseColor.setMat4("model", meshInstance.transform);
                 shaderDiffuseColor.setFloat("diffuseColComponent", 0.8f);
-                shaderDiffuseColor.setVec4("diffuseCol", material.diffuse);
+                shaderDiffuseColor.setVec3("diffuseCol", glm::vec3(material.diffuse));
                 shaderDiffuseColor.setVec3("lightSourceLoc", config.lightSource.position);
-                shaderDiffuseColor.setVec4("lightSourceColor", config.lightSource.color);
+                shaderDiffuseColor.setVec3("lightSourceColor", config.lightSource.color);
+                shaderDiffuseColor.setVec3("viewPos", camera.pos);
             }
 
             glBindVertexArray(mesh.vao);
