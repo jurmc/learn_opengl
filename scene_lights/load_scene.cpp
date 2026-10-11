@@ -39,14 +39,18 @@ int main() {
         },
     }; // Maybe we need construcor?
 
-    int w = 800;
-    int h = 600;
+    const uint32_t screen_width = 800u;
+    const uint32_t screen_heigth = 600u;
+    const uint32_t screen_split_x = 350u;
+    const uint32_t model_view_width = screen_width - screen_split_x;
+    const uint32_t model_view_heigth = screen_heigth;
+    const float model_aspect_ratio = (float)model_view_width / model_view_heigth; 
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(w, h, "Scene for lighting", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(screen_width, screen_heigth, "Scene for lighting", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glfwSetKeyCallback(window, key_callback);
@@ -78,12 +82,22 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
+    const ImGuiWindowFlags window_flags = 
+        ImGuiWindowFlags_NoMove | 
+        ImGuiWindowFlags_NoResize | 
+        ImGuiWindowFlags_NoCollapse | 
+        ImGuiWindowFlags_NoSavedSettings;
+
     while (!glfwWindowShouldClose(window)) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Light scene for Learn OpenGL");
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(screen_split_x, viewport->WorkSize.y), ImGuiCond_Always);
+
+        ImGui::Begin("Light scene for Learn OpenGL", nullptr, window_flags);
         {
             auto lsCol = &config.lightSource.color;
             float color[3] = {lsCol->x, lsCol->y, lsCol->z};
@@ -127,6 +141,8 @@ int main() {
         }
         ImGui::End();
 
+        glViewport(screen_split_x, 0u, model_view_width, model_view_heigth);
+
         auto aa = (0.5f * glfwGetTime());
         a = PI/4.0f + PI/4.0f * sin(aa);
         camera.pos.x = r * glm::cos(a);
@@ -141,13 +157,13 @@ int main() {
 
         shaderTexture.use();
         shaderTexture.setMat4("view", camera.getView());
-        shaderTexture.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderTexture.setMat4("perspective", glm::perspective( glm::radians(45.0f), model_aspect_ratio, 0.1f, 100.0f));
         shaderDiffuseColor.use();
         shaderDiffuseColor.setMat4("view", camera.getView());
-        shaderDiffuseColor.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderDiffuseColor.setMat4("perspective", glm::perspective( glm::radians(45.0f), model_aspect_ratio, 0.1f, 100.0f));
         shaderLightSource.use();
         shaderLightSource.setMat4("view", camera.getView());
-        shaderLightSource.setMat4("perspective", glm::perspective( glm::radians(45.0f), (float)w/h, 0.1f, 100.0f));
+        shaderLightSource.setMat4("perspective", glm::perspective( glm::radians(45.0f), model_aspect_ratio, 0.1f, 100.0f));
 
         // Scene objects
         for (auto &[name, meshInstance]: model.meshInstances) {
