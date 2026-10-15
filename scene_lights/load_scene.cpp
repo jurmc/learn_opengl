@@ -88,7 +88,7 @@ int main() {
         ImGui::SetNextWindowPos(viewport->WorkPos, ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(screen_split_x, viewport->WorkSize.y), ImGuiCond_Always);
     
-        gui(config, model.meshInstances);
+        gui(config, model);
 
         glViewport(screen_split_x, 0u, model_view_width, model_view_heigth);
 
