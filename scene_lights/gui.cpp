@@ -56,26 +56,6 @@ static void guiLights(SceneConfig &config) {
         lightModel = glm::scale(lightModel, glm::vec3(SCALE));
         config.lightSource.transform = lightModel;
     }
-    const char* items[] = {"2", "4", "8", "16", "32", "64", "128", "256"};
-    const uint32_t itemsInt[] = {2, 4, 8, 16, 32, 64, 128, 256};
-    static int selected_idx = 4;
-    const char* preview_val = items[selected_idx];
-
-    if (ImGui::BeginCombo("combo label", preview_val, 0)) {
-        for (int n = 0; n < IM_COUNTOF(items); ++n)
-        {
-            const bool is_selected = (selected_idx == n);
-            if (ImGui::Selectable(items[n], is_selected)) {
-                selected_idx = n;
-                config.specLightProperties.shininess =  itemsInt[n];
-            }
-
-            if (is_selected) {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-        ImGui::EndCombo();
-    }
 }
 
 static void guiObjects(Model& model) {
@@ -111,18 +91,20 @@ static void guiObjects(Model& model) {
 
     MeshInstance& mInstance = meshInstances[idxMap[selected_idx]];
     Mesh& mesh = meshes[mInstance.idx];
+    Material& material = materials[mesh.materialIdx];
     if (mesh.hasTexture) {
         ImGui::SeparatorText("Textured");
         ImGui::LabelText("File name:", "TODO, so far this is hardcoded, should be taken from GLB file");
     } else {
         ImGui::SeparatorText("Non textured");
-        Material& material = materials[mesh.materialIdx];
         glm::vec4& d = material.diffuse;
         float col[4] = {d.x, d.y, d.z, d.w};
         if (ImGui::ColorEdit4("Diffuse", col)) {
             d.x = col[0]; d.y = col[1]; d.z = col[2]; d.w = col[3];
         }
     }
+
+    ImGui::InputFloat("Shininess", &material.shininess); // TODO: change shininess so it uses set of predefined values: const char* items[] = {"2", "4", "8", "16", "32", "64", "128", "256"};
 }
     
 

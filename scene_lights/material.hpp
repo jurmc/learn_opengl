@@ -11,5 +11,6 @@ enum class MaterialType {
 struct Material {
     MaterialType type{MaterialType::None};
     glm::vec4 diffuse;
+    float shininess;
     uint32_t textureId;
 };

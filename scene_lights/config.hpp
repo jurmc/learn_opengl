@@ -11,11 +11,6 @@ typedef struct LightSource {
     glm::vec3 color;
 } LightSource;
 
-typedef struct SpecLightProperties {
-    uint32_t shininess;
-} SpecLightProperties;
-
 typedef struct SceneConfig {
     LightSource lightSource;
-    SpecLightProperties specLightProperties;
 } SceneConfig;

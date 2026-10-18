@@ -31,9 +31,6 @@ int main() {
         .lightSource = {
             .color = glm::vec4(1.0f)
         },
-        .specLightProperties {
-            .shininess = 32u,
-        },
     }; // Maybe we need construcor?
 
     const uint32_t screen_width = 800u;
@@ -138,7 +135,7 @@ int main() {
                 shaderDiffuseColor.setVec3("lightSourceLoc", config.lightSource.position);
                 shaderDiffuseColor.setVec3("lightSourceColor", config.lightSource.color);
                 shaderDiffuseColor.setVec3("viewPos", camera.pos);
-                shaderDiffuseColor.setInt("shininess", config.specLightProperties.shininess);
+                shaderDiffuseColor.setInt("shininess", material.shininess);
             }
 
             glBindVertexArray(mesh.vao);

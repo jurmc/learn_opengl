@@ -10,6 +10,7 @@
 #include <glm/ext.hpp>
 #include <print>
 #include <stb/stb_image.h>
+#include <cmath>
 
 Mesh createUntexturedMesh(const char* meshName,
         std::vector<VertexUntextured>& vertices,
@@ -104,8 +105,6 @@ Model::Model(const char *fileName, SceneConfig& config) :
     for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
         aiMaterial *m = scene->mMaterials[i];
         std::println("mat: {}", i);
-        std::println("numProp: {}", m->mNumProperties); 
-
         // Textrue (if exist) has precedence
         if (m->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString texturePath;
@@ -141,7 +140,8 @@ Model::Model(const char *fileName, SceneConfig& config) :
 
                 Material material{
                     MaterialType::Texture,
-                        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f),
+                        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f), // Ignored, diffuse color
+                        0.0f, // Ignored, shininess
                         textureId,
                 };
                 materials.push_back(material);
@@ -155,9 +155,19 @@ Model::Model(const char *fileName, SceneConfig& config) :
                 std::println(stderr, "can't obtain diffuse color");
                 std::exit(1);
             }
+
+            float roughness = 0.5f;
+            if (AI_SUCCESS != m->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness)) {
+                std::println(stderr, "can't obtain shininess value");
+                std::exit(1);
+            }
+            float shininess = std::pow(1.0f - roughness, 4) * 256.0f;
+            std::println("roughness: {}, shininess: {}", roughness, shininess);
+
             Material material{
                 MaterialType::Color,
                 glm::vec4(diffuse.r, diffuse.g, diffuse.b, diffuse.a),
+                shininess,
                 0,
             };
             materials.push_back(material);
