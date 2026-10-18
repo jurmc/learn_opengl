@@ -29,7 +29,10 @@ void key_callback(GLFWwindow* window, int key, int, int action, int) {
 int main() {
     SceneConfig config {
         .lightSource = {
-            .color = glm::vec4(1.0f)
+            .color = glm::vec4(1.0f),
+            .ambientCoefficient = 0.1f,
+            .diffuseCoeefficient = 0.8f,
+            .specularCoefficient = 0.5f,
         },
     }; // Maybe we need construcor?
 
@@ -118,19 +121,21 @@ int main() {
             const Material &material = model.materials[mesh.materialIdx];
             if (material.type == MaterialType::Texture) {
                 shaderTexture.use();
-                shaderTexture.setFloat("ambientColComponent", 0.2f);
                 shaderTexture.setMat4("model", meshInstance.transform);
-                shaderTexture.setFloat("diffuseColComponent", 0.8f);
+                shaderTexture.setFloat("ambientCoefficient", config.lightSource.ambientCoefficient);
+                shaderTexture.setFloat("diffuseCoeefficient", config.lightSource.diffuseCoeefficient);
+                shaderTexture.setFloat("specularCoefficient", config.lightSource.specularCoefficient);
                 shaderTexture.setVec3("lightSourceColor", config.lightSource.color);
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material.textureId);
                 shaderTexture.setInt("textureId", 0);
             } else {
                 shaderDiffuseColor.use();
-                shaderDiffuseColor.setFloat("ambientColComponent", 0.2f);
                 shaderDiffuseColor.setVec3("ambientCol", glm::vec3(material.diffuse));
+                shaderDiffuseColor.setFloat("ambientCoefficient", config.lightSource.ambientCoefficient);
+                shaderDiffuseColor.setFloat("diffuseCoeefficient", config.lightSource.diffuseCoeefficient);
+                shaderDiffuseColor.setFloat("specularCoefficient", config.lightSource.specularCoefficient);
                 shaderDiffuseColor.setMat4("model", meshInstance.transform);
-                shaderDiffuseColor.setFloat("diffuseColComponent", 0.8f);
                 shaderDiffuseColor.setVec3("diffuseCol", glm::vec3(material.diffuse));
                 shaderDiffuseColor.setVec3("lightSourceLoc", config.lightSource.position);
                 shaderDiffuseColor.setVec3("lightSourceColor", config.lightSource.color);

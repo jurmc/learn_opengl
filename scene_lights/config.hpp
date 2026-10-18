@@ -9,6 +9,9 @@ typedef struct LightSource {
     glm::vec3 position;
     glm::mat4 transform;
     glm::vec3 color;
+    float ambientCoefficient;
+    float diffuseCoeefficient;
+    float specularCoefficient;
 } LightSource;
 
 typedef struct SceneConfig {

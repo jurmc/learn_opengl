@@ -44,6 +44,9 @@ static void guiLights(SceneConfig &config) {
         lsCol->y = color[1];
         lsCol->z = color[2];
     }
+    ImGui::InputFloat("Ambient coefficient", &config.lightSource.ambientCoefficient);
+    ImGui::InputFloat("Diffuse coefficient", &config.lightSource.diffuseCoeefficient);
+    ImGui::InputFloat("Specular coefficient", &config.lightSource.specularCoefficient);
     auto lsPos = &config.lightSource.position;
     float pos[3]{lsPos->x, lsPos->y, lsPos->z};
     if (ImGui::InputFloat3("Camera pos", pos)) {
