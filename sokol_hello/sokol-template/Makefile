@@ -4,7 +4,7 @@ BIN_DIR := bin
 SHDR_SRC_DIR := shdr_src
 SHDR_GEN_DIR := shdr_gen
 
-TARGET = sokol_hello
+TARGET = $(BIN_DIR)/sokol_hello
 
 CC := gcc
 CFLAGS := -MP -MMD -I ../sokol -I ../sokol-samples/libs/ -I $(SHDR_GEN_DIR)
@@ -17,14 +17,12 @@ SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.d, $(SRCS))
 
-SHDR_SRCS := $(wildcard $(SHDR_SRC_DIR)/%.glsl)
-SHDR_GEN := $(patsubst $(SHDR_SRC_DIR)/%.glsl, $(SHDR_GEN_DIR)/%.glsl.h, $(SHDRS))
+SHDR_SRCS := $(wildcard $(SHDR_SRC_DIR)/*.glsl)
+SHDR_GEN := $(patsubst $(SHDR_SRC_DIR)/%.glsl, $(SHDR_GEN_DIR)/%.glsl.h, $(SHDR_SRCS))
 
 all: $(TARGET)
 
-$(warning objs: $(OBJS))
-
-$(TARGET): $(SHDR_GEN) $(OBJS) | $(OBJ_DIR)
+$(TARGET): $(SHDR_GEN) $(OBJS) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -39,4 +37,4 @@ $(OBJ_DIR) $(SHDR_GEN_DIR) $(BIN_DIR):
 	mkdir -p $@
 
 .PHONY clean:
-	rm -rf $(OBJ_DIR)/*.o
+	rm -rf $(OBJ_DIR) $(SHDR_GEN_DIR) $(BIN_DIR)
