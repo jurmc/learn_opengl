@@ -1,4 +1,10 @@
+@ctype mat4 mat44_t
+
 @vs vs
+
+layout(binding=0) uniform vs_params {
+    mat4 model;
+};
 
 in vec4 position;
 in vec4 color0;
@@ -6,14 +12,14 @@ in vec4 color0;
 out vec4 color;
 
 void main() {
-    gl_Position = position;
+    gl_Position = model * position;
     color = color0;
 }
 @end
 
 @fs fs
 
-layout(binding=0) uniform fs_params {
+layout(binding=1) uniform fs_params {
     float time;
 };
 

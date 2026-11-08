@@ -1,6 +1,8 @@
 #define SOKOL_IMPL
 #define SOKOL_GLCORE
 
+#include "vecmath.h"
+
 #include "sokol_gfx.h"
 #include "sokol_log.h"
 #include "sokol_hello.glsl.h"
@@ -44,7 +46,6 @@ int main(void) {
         .vertex_buffers[0] = vbuf,
     };
 
-    fs_params_t fs_uniforms = { .time = 0.5f };
 
     sg_pass_action action = {
         .colors[0] = {
@@ -53,15 +54,25 @@ int main(void) {
         }
     };
 
+    vs_params_t vs_uniforms;
+    fs_params_t fs_uniforms;
+
     while (!glfwWindowShouldClose(glfw_window())) {
+        float time = glfwGetTime();
+
         sg_begin_pass(&(sg_pass){
                 .action = action,
                 .swapchain = glfw_swapchain() });
 
         sg_apply_pipeline(pip);
         sg_apply_bindings(&bind);
-        fs_uniforms.time = glfwGetTime();
+
+        mat44_t model_rot = mat44_rotation_yaw_pitch_roll(0.7*time, 1.0*time, 0.0f);
+        vs_uniforms.model = model_rot;
+        sg_apply_uniforms(UB_vs_params, &SG_RANGE(vs_uniforms));
+        fs_uniforms.time = time;
         sg_apply_uniforms(UB_fs_params, &SG_RANGE(fs_uniforms));
+
         sg_draw(0, 3, 1);
         sg_end_pass();
         sg_commit();
