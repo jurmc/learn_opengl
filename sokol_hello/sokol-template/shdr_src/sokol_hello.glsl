@@ -1,4 +1,5 @@
 @vs vs
+
 in vec4 position;
 in vec4 color0;
 
@@ -11,11 +12,17 @@ void main() {
 @end
 
 @fs fs
+
+layout(binding=0) uniform fs_params {
+    float time;
+};
+
 in vec4 color;
 out vec4 frag_color;
 
 void main() {
-    frag_color = color;
+    float strength = 0.5 + 0.5*sin(time);
+    frag_color = color * strength;
 }
 @end
 

@@ -7,7 +7,7 @@ SHDR_GEN_DIR := shdr_gen
 TARGET = $(BIN_DIR)/sokol_hello
 
 CC := gcc
-CFLAGS := -MP -MMD -I include -I ../sokol -I ../sokol-samples/ -I $(SHDR_GEN_DIR)
+CFLAGS := -MP -MMD -I include -I ../sokol -I ../sokol-samples/ -I $(SHDR_GEN_DIR)/
 LDFLAGS := -ggdb -lm -lX11 -lXi -lGL -lXcursor -lglfw
 
 SHDC := ../sokol-tools/.fibs/dist/linux-make-release/sokol-shdc

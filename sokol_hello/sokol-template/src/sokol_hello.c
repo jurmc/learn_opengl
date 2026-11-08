@@ -44,6 +44,8 @@ int main(void) {
         .vertex_buffers[0] = vbuf,
     };
 
+    fs_params_t fs_uniforms = { .time = 0.5f };
+
     sg_pass_action action = {
         .colors[0] = {
             .load_action = SG_LOADACTION_CLEAR,
@@ -58,6 +60,8 @@ int main(void) {
 
         sg_apply_pipeline(pip);
         sg_apply_bindings(&bind);
+        fs_uniforms.time = glfwGetTime();
+        sg_apply_uniforms(UB_fs_params, &SG_RANGE(fs_uniforms));
         sg_draw(0, 3, 1);
         sg_end_pass();
         sg_commit();
