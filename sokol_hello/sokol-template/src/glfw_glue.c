@@ -8,8 +8,13 @@ static int _major_version;
 static int _minor_version;
 static GLFWwindow* _window;
 
-
 #define _glfw_def(val, def) (((val) == 0) ? (def) : (val))
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
 
 void glfw_init(const glfw_desc_t* desc) {
     assert(desc);
@@ -38,6 +43,8 @@ void glfw_init(const glfw_desc_t* desc) {
     _window = glfwCreateWindow(desc_def.width, desc_def.height, desc_def.title, 0, 0);
     glfwMakeContextCurrent(_window);
     glfwSwapInterval(1);
+
+    glfwSetKeyCallback(_window, key_callback);
 }
 
 GLFWwindow* glfw_window(void) {

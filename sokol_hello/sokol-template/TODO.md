@@ -1,1 +1,1 @@
-ESC should close window
+Add simple camera to this template proj
